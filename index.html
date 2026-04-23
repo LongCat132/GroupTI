@@ -387,6 +387,86 @@
       border-color: var(--text-muted);
     }
 
+    .match-section {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .match-title {
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .match-hint {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .match-input-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .match-input {
+      flex: 1;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: var(--text);
+      font-size: 16px;
+      text-transform: uppercase;
+    }
+
+    .match-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .match-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .match-result {
+      padding: 16px;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .match-result.show {
+      display: block;
+    }
+
+    .match-score {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .match-label {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .match-comment {
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
     .modal-overlay {
       display: none;
       position: fixed;
@@ -570,6 +650,16 @@
           <button class="share-btn" onclick="showGallery()">人格图鉴</button>
           <br>
           <button class="restart-btn" onclick="restartQuiz()">再做一次</button>
+        </div>
+
+        <div class="match-section" id="matchSection">
+          <h3 class="match-title">匹配查询</h3>
+          <p class="match-hint" id="matchHint"></p>
+          <div class="match-input-wrapper">
+            <input type="text" id="matchInput" class="match-input" placeholder="输入对方的人格类型（如CVRI）" maxlength="4">
+            <button class="match-btn" onclick="calculateMatch()">查询</button>
+          </div>
+          <div class="match-result" id="matchResult"></div>
         </div>
       </div>
     </div>
@@ -1226,7 +1316,110 @@
     document.getElementById('dim3').textContent = dim3;
     document.getElementById('dim4').textContent = dim4;
     
+    const expectedRole = userRole === 'leader' ? '组员' : '组长';
+    document.getElementById('matchHint').textContent = `输入${expectedRole}的人格类型，看看你们的匹配度如何？`;
+    document.getElementById('matchInput').value = '';
+    document.getElementById('matchResult').classList.remove('show');
+    
     showPage('result');
+  }
+
+  const matchComments = {
+    perfect: [
+      "天作之合！你们就是小组作业界的的神雕侠侣！",
+      "这配合，简直就是失散多年的兄妹！",
+      "你们在一起，DDL见了都要绕道走！",
+      "其他组员：他们是不是提前对过剧本？",
+      "这就是传说中的最佳拍档吗？爱了爱了！"
+    ],
+    good: [
+      "还不错，至少不会被退货！",
+      "可以是可以，就是过程可能会有点坎坷...",
+      "沟通一下还是能过的，配合需加强！",
+      "至少不会掀桌子，还算有救！",
+      "瑕不掩瑜，好好调教还是能打的！"
+    ],
+    normal: [
+      "平平淡淡才是真，别要求太高！",
+      "中将就着用吧，还能离咋地？",
+      "也就是及格边缘，dddd！",
+      "能做完就不错了，要啥自行车？",
+      "别想太多，做完就行！"
+    ],
+    bad: [
+      "你们这是在渡劫吗？",
+      "建议换个组员，或者重组吧！",
+      "这配合，做完不把人送走就算成功！",
+      "展示当天记得买保险！",
+      "祝你们平安度过这次小组作业..."
+    ],
+    terrible: [
+      "快跑！这是一个有预谋的陷阱！",
+      "我只能帮到这里了，自求多福吧！",
+      "建议直接退组，还来得及！",
+      "这可能是你们最后一次合作了，珍惜吧！",
+      "水逆期间，宜静不宜动！"
+    ]
+  };
+
+  function calculateMatch() {
+    const myType = document.getElementById('resultType').textContent;
+    const otherType = document.getElementById('matchInput').value.toUpperCase().trim();
+    
+    if (!otherType || otherType.length !== 4 || !personalityTypes[otherType]) {
+      alert('请输入正确的人格类型（如CVRI）');
+      return;
+    }
+    
+    const myD1 = myType[0];
+    const myD2 = myType[1];
+    const myD3 = myType[2];
+    const myD4 = myType[3];
+    
+    const otherD1 = otherType[0];
+    const otherD2 = otherType[1];
+    const otherD3 = otherType[2];
+    const otherD4 = otherType[3];
+    
+    let score = 0;
+    
+    if (myD1 === otherD1) score += 30;
+    else if (myD1 === 'C' && otherD1 === 'D') score += 10;
+    else if (myD1 === 'D' && otherD1 === 'C') score += 5;
+    
+    if (myD2 === otherD2) score += 25;
+    else if (myD2 !== otherD2) score += 15;
+    
+    if (myD3 === otherD3) score += 20;
+    else score += 10;
+    
+    if (myD4 === otherD4) score += 25;
+    else score += 10;
+    
+    const [s, comments] = getMatchLevel(score);
+    const colors = { perfect: '#4CAF50', good: '#8BC34A', normal: '#FFC107', bad: '#FF9800', terrible: '#f44336' };
+    
+    let html = `<div class="match-result show"><div class="match-score" style="color:${colors[s]}">${score}%</div><div class="match-label">${getMatchLabel(s)}</div><div class="match-comment">${comments}</div></div>`;
+    
+    document.getElementById('matchResult').innerHTML = html;
+    document.getElementById('matchResult').classList.add('show');
+  }
+
+  function getMatchLevel(score) {
+    if (score >= 90) return [score, randomFrom(matchComments.perfect)];
+    if (score >= 70) return [score, randomFrom(matchComments.good)];
+    if (score >= 50) return [score, randomFrom(matchComments.normal)];
+    if (score >= 30) return [score, randomFrom(matchComments.bad)];
+    return [score, randomFrom(matchComments.terrible)];
+  }
+
+  function getMatchLabel(s) {
+    const labels = { perfect: '天作之合', good: '还不错', normal: '中将就', bad: '渡劫中', terrible: '快跑' };
+    return labels[s];
+  }
+
+  function randomFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
   }
 
   function showDimensionModal(dim) {
