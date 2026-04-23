@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GroupTI - 小组作业人格测试</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1a1a2e;
+      --accent: #e94560;
+      --bg: #0f0f1a;
+      --card-bg: #16162a;
+      --text: #ffffff;
+      --text-muted: #a0a0b0;
+      --border: #2a2a4a;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      background-image: 
+        radial-gradient(ellipse at 20% 0%, rgba(233, 69, 96, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(26, 26, 46, 0.8) 0%, transparent 50%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 40px;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .welcome {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .logo {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: var(--text-muted);
+      margin-bottom: 30px;
+    }
+
+    .intro {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 30px;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+
+    .intro h3 {
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    .intro p {
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: var(--text);
+      border: none;
+      padding: 16px 48px;
+      font-size: 18px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+    }
+
+    .role-btn {
+      display: block;
+      width: 100%;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .role-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .role-icon {
+      font-size: 40px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .role-text {
+      font-size: 20px;
+      font-weight: 500;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .role-desc {
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .progress-text {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      margin-left: 16px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid var(--border);
+    }
+
+    .question-number {
+      color: var(--accent);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .question-text {
+      font-size: 20px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .option-btn:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .result {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .result-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--text);
+      padding: 8px 20px;
+      border-radius: 50px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .result-type {
+      font-size: 64px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+
+    .result-title {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .result-subtitle {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .dimensions {
+      margin-bottom: 24px;
+    }
+
+    .dimension-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .dimension-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .dimension-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dimension-item:hover {
+      border-color: var(--accent);
+    }
+
+    .dimension-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .dimension-value {
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .dimension-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .result-description {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+
+    .result-tagline {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .result-desc {
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+
+    .scene-card {
+      background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(26, 26, 46, 0.5));
+      border: 1px solid var(--accent);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .scene-title {
+      font-size: 14px;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .result-suggestion {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .share-section {
+      margin-bottom: 20px;
+    }
+
+    .share-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 0 6px;
+      transition: all 0.3s ease;
+    }
+
+    .share-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .restart-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 12px 24px;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 14px;
+      margin: 0 6px;
+      transition: all 0.3s ease;
+    }
+
+    .restart-btn:hover {
+      border-color: var(--text-muted);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 90%;
+      max-height: 80%;
+      overflow-y: auto;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+
+    .modal-text {
+      line-height: 1.8;
+      color: var(--text-muted);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .gallery-item {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 12px;
+    }
+
+    .gallery-item:hover {
+      border-color: var(--accent);
+    }
+
+    .gallery-item.current {
+      border-color: var(--accent);
+      background: rgba(233, 69, 96, 0.1);
+    }
+
+    @media (max-width: 480px) {
+      .title { font-size: 36px; }
+      .dimension-items { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Welcome Page -->
+    <div class="page active" id="welcome">
+      <div class="welcome">
+        <div class="logo">📚</div>
+        <h1 class="title">GroupTI</h1>
+        <p class="subtitle">小组作业人格测试</p>
+        <div class="intro">
+          <h3>什么是 GroupTI？</h3>
+          <p>你是否曾在小组作业中遇到过「已读不回」的组员？或者自己就是那个一个人扛下所有的冤种组长？GroupTI将帮你解锁专属人格类型——从「催命DDL阎罗王」到「死线隐身术大宗师」，总有一款适合你。</p>
+        </div>
+        <button class="btn" id="testBtn">开始测试</button>
+      </div>
+    </div>
+
+    <!-- Role Selection -->
+    <div class="page" id="role">
+      <div class="welcome">
+        <div class="logo">🤔</div>
+        <h1 class="title">选择你的角色</h1>
+        <p class="subtitle">你在小组作业中通常担任？</p>
+        <div class="intro" style="text-align: center;">
+          <button class="role-btn" id="btnLeader">
+            <span class="role-icon">👑</span>
+            <span class="role-text">组长 / 负责人</span>
+            <span class="role-desc">主导分工、统筹进度、催作业</span>
+          </button>
+          <button class="role-btn" id="btnMember">
+            <span class="role-icon">👤</span>
+            <span class="role-text">组员 / 执行者</span>
+            <span class="role-desc">接受任务、完成分配、听安排</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div class="page" id="quiz">
+      <div class="quiz-header">
+        <span class="progress-text" id="progressText">1/10</span>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+        </div>
+      </div>
+      <div class="question-card">
+        <div class="question-number" id="questionNumber">问题 1</div>
+        <div class="question-text" id="questionText"></div>
+        <div class="options" id="options"></div>
+      </div>
+    </div>
+
+    <!-- Result Page -->
+    <div class="page" id="result">
+      <div class="result">
+        <div class="result-badge" id="resultBadge"></div>
+        <div class="result-type" id="resultType"></div>
+        <h2 class="result-title" id="resultTitle"></h2>
+        <p class="result-subtitle" id="resultSubtitle"></p>
+        
+        <div class="dimensions">
+          <p class="dimension-hint">点击卡片查看详细解释</p>
+          <div class="dimension-items">
+            <div class="dimension-item" onclick="showDimensionModal(1)">
+              <div class="dimension-label">时间态度</div>
+              <div class="dimension-value" id="dim1"></div>
+            </div>
+            <div class="dimension-item" onclick="showDimensionModal(2)">
+              <div class="dimension-label">沟通方式</div>
+              <div class="dimension-value" id="dim2"></div>
+            </div>
+            <div class="dimension-item" onclick="showDimensionModal(3)">
+              <div class="dimension-label">决策风格</div>
+              <div class="dimension-value" id="dim3"></div>
+            </div>
+            <div class="dimension-item" onclick="showDimensionModal(4)">
+              <div class="dimension-label">执行偏好</div>
+              <div class="dimension-value" id="dim4"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-description">
+          <p class="result-tagline" id="resultTagline"></p>
+          <p id="resultDesc"></p>
+        </div>
+
+        <div class="scene-card">
+          <div class="scene-title">名场面</div>
+          <p id="resultScene"></p>
+        </div>
+
+        <p class="result-suggestion" id="resultSuggestion"></p>
+
+        <div class="share-section">
+          <button class="share-btn" onclick="shareResult()">分享结果</button>
+          <button class="share-btn" onclick="showGallery()">人格图鉴</button>
+          <br>
+          <button class="restart-btn" onclick="restartQuiz()">再做一次</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <h3 class="modal-title" id="modalTitle"></h3>
+        <p class="modal-text" id="modalText"></p>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let userRole = '';
+  
+  const baseQuestions = [
+    {
+      text: "离展示还有3天，组内进度50%，你会？",
+      options: [
+        { letter: 'C', text: "连夜召开紧急会议，制定小时级甘特图" },
+        { letter: 'D', text: "才刚开始做，但很淡定" },
+        { letter: 'S', text: "私聊组长：「需要我做什么尽管说」" }
+      ]
+    },
+    {
+      text: "你的part被打回重做3次，你会？",
+      options: [
+        { letter: 'G', text: "深夜痛哭但默默修改到v4.0" },
+        { letter: 'D', text: "要不这部分找别人吧，我真的不行" },
+        { letter: 'I', text: "我觉得我的版本更有艺术性" }
+      ]
+    },
+    {
+      text: "小组讨论时，你通常的角色是？",
+      options: [
+        { letter: 'C', text: "记录员+计时员+会后发会议纪要" },
+        { letter: 'V', text: "疯狂输出想法，根本停不下来" },
+        { letter: 'S', text: "开着摄像头但静音刷微博" }
+      ]
+    },
+    {
+      text: "看到组员发「收到」但24小时没动静，你会？",
+      options: [
+        { letter: 'V', text: "连环@+私聊+打电话" },
+        { letter: 'G', text: "算了，这部分我自己来吧" },
+        { letter: 'E', text: "截图发朋友圈：「小组作业受害者+1」" }
+      ]
+    },
+    {
+      text: "分配任务时，你倾向于？",
+      options: [
+        { letter: 'R', text: "按能力分工，明确责任到人" },
+        { letter: 'E', text: "先问问大家想做哪个部分" },
+        { letter: 'I', text: "先提出一个酷炫的概念" }
+      ]
+    },
+    {
+      text: "面对分歧时，你通常？",
+      options: [
+        { letter: 'R', text: "用数据和事实说服对方" },
+        { letter: 'E', text: "大家开心就好，我都可以" },
+        { letter: 'C', text: "按我说的做，结果我来负责" }
+      ]
+    },
+    {
+      text: "当有人说「这个我不会」时，你会？",
+      options: [
+        { letter: 'G', text: "好吧那我来做" },
+        { letter: 'V', text: "发教程链接+语音讲解直到学会" },
+        { letter: 'D', text: "那先跳过这部分吧" }
+      ]
+    },
+    {
+      text: "小组作业截止前24小时，你在？",
+      options: [
+        { letter: 'D', text: "才刚开始做，但很淡定" },
+        { letter: 'G', text: "已经在整合最终版了" },
+        { letter: 'I', text: "在准备presentation的100种开场" }
+      ]
+    },
+    {
+      text: "完成作业后，你会？",
+      options: [
+        { letter: 'C', text: "检查三遍格式、标点、参考文献" },
+        { letter: 'R', text: "只要内容OK就行，格式浮云" },
+        { letter: 'E', text: "先发朋友圈庆祝，作业再说" }
+      ]
+    },
+    {
+      text: "收到群里99+消息，你会？",
+      options: [
+        { letter: 'V', text: "爬楼全部看完并回复" },
+        { letter: 'S', text: "只看@自己的消息" },
+        { letter: 'D', text: "假装没看见，反正有人总结" }
+      ]
+    }
+  ];
+
+  const leaderQuestions = [
+    {
+      text: "刚被选为组长，你的第一反应是？",
+      options: [
+        { letter: 'C', text: "立刻建群、拟公告、制定分工表" },
+        { letter: 'D', text: "内心崩溃，表面淡定" },
+        { letter: 'E', text: "有点紧张但还是接下任务" }
+      ]
+    },
+    {
+      text: "组员说「不想做」时，你会？",
+      options: [
+        { letter: 'C', text: "威严施压，必须做" },
+        { letter: 'V', text: "苦口婆心劝导1小时" },
+        { letter: 'G', text: "好的，那我来做" }
+      ]
+    },
+    {
+      text: "看到组员进度慢，你会？",
+      options: [
+        { letter: 'V', text: "疯狂@催进度" },
+        { letter: 'D', text: "内心着急但不说" },
+        { letter: 'I', text: "想个新方案让他们有兴趣" }
+      ]
+    },
+    {
+      text: "展示前一周，你会？",
+      options: [
+        { letter: 'C', text: "制定详细计划，每天检查" },
+        { letter: 'D', text: "还有一周，不急" },
+        { letter: 'R', text: "等大家做完再整合" }
+      ]
+    },
+    {
+      text: "组员做出了成果，你会？",
+      options: [
+        { letter: 'C', text: "检查三遍，找出问题" },
+        { letter: 'E', text: "疯狂夸赞，真棒！" },
+        { letter: 'I', text: "问有没有创新点" }
+      ]
+    }
+  ];
+
+  const memberQuestions = [
+    {
+      text: "被分配到不想做的部分，你会？",
+      options: [
+        { letter: 'G', text: "硬着头皮做" },
+        { letter: 'E', text: "问能不能换" },
+        { letter: 'I', text: "把它改成我想做的样子" }
+      ]
+    },
+    {
+      text: "组长催进度时，你会？",
+      options: [
+        { letter: 'V', text: "「收到！马上做！」" },
+        { letter: 'D', text: "内心慌得一批" },
+        { letter: 'S', text: "已读不回，做完再说" }
+      ]
+    },
+    {
+      text: "做作业时，你喜欢？",
+      options: [
+        { letter: 'R', text: "跟着组长指示做" },
+        { letter: 'I', text: "加很多自己的创意" },
+        { letter: 'E', text: "和组员一起边聊边做" }
+      ]
+    },
+    {
+      text: "组长提出新想法，你会？",
+      options: [
+        { letter: 'C', text: "评估难度和时间" },
+        { letter: 'E', text: "「好酷！支持！」" },
+        { letter: 'I', text: "提出更好的想法" }
+      ]
+    },
+    {
+      text: "组员摆烂，你会？",
+      options: [
+        { letter: 'G', text: "自己默默做完" },
+        { letter: 'V', text: "在群里阴阳怪气" },
+        { letter: 'D', text: "跟着一起摆" }
+      ]
+    }
+  ];
+
+  const dimensionDescriptions = {
+    1: {
+      title: "时间态度",
+      C: "掌控时间型 - 提前���划���未雨绸缪永远是你的信条。你会把DDL踩在脚下，而不是被DDL踩在脚下。",
+      D: "放养时间型 - DDL是你的好朋友，不到最后一刻绝对不动工。传说中的DDL Fighter就是你。"
+    },
+    2: {
+      title: "沟通方式",
+      V: "话痨型 - 你是群里最活跃的存在，消息999+有一半是你发的。沟通是你的灵魂。",
+      S: "沉默型 - 你是传说中的潜水员，能用表情包绝对不说话。群里可能都没人注意到你。"
+    },
+    3: {
+      title: "决策风格",
+      R: "结果导向型 - 只要结果好，过程不重要。你只看KPI，不看废话。",
+      E: "情感导向型 - 你更在乎大家开不开心，氛围好不好。快乐是第一生产力。"
+    },
+    4: {
+      title: "执行偏好",
+      I: "创意型 - 你要做不一样的东西，标准答案是你的敌人。创新是你的名片。",
+      G: "执行型 - 让你做什么你就做什么，踏踏实实做完就是你的荣耀。"
+    }
+  };
+
+  const personalityTypes = {
+    "CVRI": { 
+      leader: {
+        title: "掌控话痨结果创意型", 
+        subtitle: "全部都要掌控在自己手里", 
+        tagline: "我全都要！", 
+        desc: "你是组内最强势的组长，所有事情都要按你的来。沟通要频繁，结果要完美，还要有创意。组员怕你，但成果确实牛。",
+        scene: "你掌控一切：建群、制定计划、疯狂催促、追求完美、还要创新。组员说「组长救命」，你说「没问题，我来改」但最后还是你改的。",
+        suggestion: "建议：适当放权，让组员也有发挥空间。"
+      },
+      member: {
+        title: "掌控话痨结果创意型", 
+        subtitle: "组长说的对，我还要更好", 
+        tagline: "我可以做得更好！", 
+        desc: "你是最卷的组员，不仅按组长说的做，还要更好。沟通频繁，追求完美，还常有新想法。组长压力很大。",
+        scene: "组长说「这样就行」，你说「我觉得可以更好」然后改了10遍。组长说「够了」，你说「再改一下」。展示时你说「这部分我优化了3次」——组员惊呆。",
+        suggestion: "建议：有时候「差不多就行」也是一种智慧。"
+      }
+    },
+    "CVRG": { 
+      leader: {
+        title: "掌控话痨结果执行型", 
+        subtitle: "执行力拉满，掌控一切", 
+        tagline: "做就完事！", 
+        desc: "你是行动派组长：掌控全局、频繁沟通、只看结果、埋头执行。分配任务清晰，催得紧，但自己也带头干。",
+        scene: "你制定了详细计划，每小时催进度。组员说「正在做」，你说「我要看到结果」。展示前你说「整合我来做」——然后你做到了凌晨3点。",
+        suggestion: "建议：适当放松，别把自己累垮。"
+      },
+      member: {
+        title: "靠谱执行者", 
+        subtitle: "交给我，放心", 
+        tagline: "做就对了！", 
+        desc: "你是最靠谱的组员：按组长说的做，执行到位，经常提前完成。沟通积极但不过度，踏实肯干。",
+        scene: "组长说「这个很简单」，你说「我做好了」。组长说「这么快？」你说「顺便优化了一下」。组员还在做第一遍，你已经做完还检查了两遍。",
+        suggestion: "建议：偶尔也让别人做做看你做过的内容。"
+      }
+    },
+    "CVEI": { 
+      leader: {
+        title: "掌控话痨情感创意型", 
+        subtitle: "情绪价值拉满", 
+        tagline: "大家开心最重要！", 
+        desc: "你是最有人情味的组长：掌控进度、频繁沟通、照顾情绪、创意不断。组员喜欢你，但有时太啰嗦。",
+        scene: "你建了群，制定了计划，疯狂发消息鼓励大家，还总有新想法。组员说「组长太热情了」，你说「大家一起开心最重要！」每次展示你说「大家都很棒！」——虽然有的部分是你做的。",
+        suggestion: "建议：该严肃时要严肃。"
+      },
+      member: {
+        title: "话痨开心果", 
+        subtitle: "情绪价值第一人", 
+        tagline: "大家开心我也开心！", 
+        desc: "你是组内的开心果：话多、情绪价值拉满、常有奇思妙想。任务做不做另说，气氛一定要好。",
+        scene: "组长布置任务，你「收到！太棒了！这个想法太酷了！」 组员完成一部分，你「太棒了宝子们！」 最后你什么都没做，但大家在群里说「没有你氛围不行」。你发「爱你们~」配三个爱心。",
+        suggestion: "建议：做点和说的要一致哦。"
+      }
+    },
+    "CVEG": { 
+      leader: {
+        title: "掌控话痨情感执行型", 
+        subtitle: "踏实的老母亲", 
+        tagline: "我来做，你们开心就好", 
+        desc: "你是最操心的组长：掌控节奏、疯狂催促、照顾情绪、自己兜底。组员开心就好，累的是你。",
+        scene: "你建群、制定计划、天天催促、安抚组员「没关系」，然后自己默默做到凌晨3点。第二天你说「大家辛苦了~」——组员说「组长你也太好了」。其实你已经累成狗。",
+        suggestion: "建议：适当让组员自己承担。"
+      },
+      member: {
+        title: "贴心小棉袄", 
+        subtitle: "永远在支持", 
+        tagline: "我支持你！", 
+        desc: "你是最暖的组员：跟着组长、支持决定、配合执行还给情绪价值。组长很喜欢你，但你可能有点没主见。",
+        scene: "组长说「这样改」，你说「好的！」 组长说「那个也改」，你说「没问题！」 组长说「抱歉要改第5次」，你说「完全理解！我这就改！」——最后你比组长还累。",
+        suggestion: "建议：适当表达自己的想法。"
+      }
+    },
+    "CSRI": { 
+      leader: {
+        title: "掌控沉默结果创意型", 
+        subtitle: "低调的大佬", 
+        tagline: "成果说话", 
+        desc: "你是低调的强者：掌控进度、沉默但关注结果、时有创意。话不多但每句都点在点上。",
+        scene: "你建群发计划，然后潜水。组员问「组长呢？」 你出现说「进度慢了」。展示前你拿出一个惊艳的方案——组员惊呆。你淡淡说「还可以」。",
+        suggestion: "建议：适当也让组员知道你在关注。"
+      },
+      member: {
+        title: "沉默卷王", 
+        subtitle: "卷死人不偿命", 
+        tagline: "低调发育", 
+        desc: "你是最卷的潜水员：不多说话，但偷偷努力拿结果，偶尔还能爆个创意。组长以为你没做，结果你悄悄完成还更好了。",
+        scene: "组长问「进度怎么样？」 你没回消息，第二天交了一份完美的方案。组长惊呆问你「什么时候做的？」你说「昨晚(凌晨3点)」。组员说「卷王！」你淡淡回「还好」。",
+        suggestion: "建议：适当也让组长知道你在做什么。"
+      }
+    },
+    "CSRG": { 
+      leader: {
+        title: "掌控沉默结果执行型", 
+        subtitle: "闷声干大事", 
+        tagline: "干就对了！", 
+        desc: "你是闷声干大事的组长：掌控进度、不多废话、只问结果、自己带头干。话最少，活最多。",
+        scene: "你发了个计划表，然后消失。组员慌了「组长呢？」你出现说「我那部分做完了」——组员惊呆。最后整合你说我来做吧，然后又是你做到凌晨。",
+        suggestion: "建议：适当也分配点任务给组员。"
+      },
+      member: {
+        title: "沉默执行者", 
+        subtitle: "执行力满分", 
+        tagline: "好的，我做", 
+        desc: "你是最靠谱的执行者：不多废话，交代的事一定做好。不问为什么，只问做什么。",
+        scene: "组长说「这部分你来做」，你说「好的」。组长说「格式这样调」，你说「好的」。组长说「这个很难」，你说「我试试」——第二天你交了一份完美的。组长说「666」你回「应该的」。",
+        suggestion: "建议：适当也表达一下难度。"
+      }
+    },
+    "CSEI": { 
+      leader: {
+        title: "掌控沉默情感创意型", 
+        subtitle: "温暖的大白", 
+        tagline: "大家开心我就开心", 
+        desc: "你是温暖的掌控者：掌控进度、不多说话、照顾情绪、经常创新想法。不强势但让大家很舒服。",
+        scene: "你发计划表然后潜水，偶尔出来说「大家辛苦了~」「我有个小想法~」「不急，慢慢来~」组员说「组长真好」。最后展示你说「大家都超棒！」——虽然有的部分是你悄悄做的。",
+        suggestion: "建议：该催时要催。"
+      },
+      member: {
+        title: "温暖小天使", 
+        subtitle: "永远支持你", 
+        tagline: "加油！你可以的！", 
+        desc: "你是温暖的小太阳：话不多但给足情绪支持，常有可爱的小想法。任务做得还行，主要是让人开心。",
+        scene: "组长说「这个好难」，你说「没关系的，慢慢来~」「你可以的！」 组员崩溃时说「加油！宝子们！」——虽然你没帮上什么忙，但大家都喜欢你。",
+        suggestion: "建议：实际行动也要跟上。"
+      }
+    },
+    "CSEG": { 
+      leader: {
+        title: "掌控沉默情感执行型", 
+        subtitle: "暖心大管家", 
+        tagline: "我来做，大家开心", 
+        desc: "你是暖心大管家：掌控一切但不多说，照顾大家情绪，自己默默做完所有事。组员爱你但也会心疼。",
+        scene: "你发计划，然后默默做事。组员说「组长这个好难」，你说「我来做吧」「不急」。最后你把所有人的部分都做完了还说「大家都很棒！」——组员感动哭。",
+        suggestion: "建议：适当也让组员做。"
+      },
+      member: {
+        title: "配合天使", 
+        subtitle: "永远配合", 
+        tagline: "好呀，可以呀", 
+        desc: "你是最配合的组员：让做什么做什么，情绪价值给满执行力也还行。没有主见但很好相处。",
+        scene: "组长说「这个任务你来做」，你说「好呀~」「会不会太难？」「没关系，我试试~」「好的，我改~」最后你做完了还帮别人也做了。组长说「没有你怎么办」你说「应该的~」。",
+        suggestion: "建议：有自己的想法也可以说。"
+      }
+    },
+    "DVRI": { 
+      leader: {
+        title: "放养话痨结果创意型", 
+        subtitle: "甩手掌柜+话痨+创新", 
+        tagline: "我有个大胆的想法", 
+        desc: "你是最自由的组长：不管进度、疯狂输出、只看结果、创意不断。组员自由但也有点慌，因为不知道你在想什么。",
+        scene: "你建群说「大家随便做~」然后就不见了。突然出现「我有个超棒的想法！」「我们做个创新的！」组员问「具体？」你说「你们定~」然后又消失了。",
+        suggestion: "建议：适当跟进一下进度。"
+      },
+      member: {
+        title: "灵活创新者", 
+        subtitle: "想法多，执行看心情", 
+        tagline: "我有超棒的想法！", 
+        desc: "你是创意达人：DDL前才动工常有神来之笔。话多想法多，但做不做另说。",
+        scene: "组长布置任务，你「收到！」然后消失。展示前你说「等等！我有个绝妙的想法！」「加这个元素！」 组员说「来不来得及？」你说「必须来得！」然后你熬夜搞定了。",
+        suggestion: "建议：想法要落地。"
+      }
+    },
+    "DVRG": { 
+      leader: {
+        title: "放养话痨执行型", 
+        subtitle: "话痨但不管事", 
+        tagline: "加油！奥利给！", 
+        desc: "你是最佛的话痨组长：不管进度、光说不练、只看结果、自己不动。组员压力很大因为你只会加油。",
+        scene: "你建群发「大家加油！」「没问题！」「我支持你们！」然后就没有然后了。组员问「组长呢？」你失踪了。展示前你说「大家太棒了！」——组员：你除了加油还会什么？",
+        suggestion: "建议：适当也做点事。"
+      },
+      member: {
+        title: "加油党", 
+        subtitle: "精神支持第一人", 
+        tagline: "加油！你可以的！", 
+        desc: "你是气氛组组长：话多、情绪价值给满、但实际行动不多。常说「加油」「太棒了」「没问题」然后没然后了。",
+        scene: "组长说「这个周五交」，你说「收到！加油！」「大家太棒了！”“我可以帮忙吗？」——然后你没有做。组��说��你做了什么？」你说「我提供了情绪价值啊！」",
+        suggestion: "建议：实际行动也要有。"
+      }
+    },
+    "DVEI": { 
+      leader: {
+        title: "放养话痨情感创意型", 
+        subtitle: "温暖的鸡汤大师", 
+        tagline: "大家开心最重要！", 
+        desc: "你是温暖的放养组长：不管进度、话很多、情绪价值拉满、常有奇思妙想。组员很喜欢你但成果emmm...",
+        scene: "你建群说「大家随便做~开心最重要~」「我有个超棒的想法~」「大家太棒了~」然后你去玩了。组员做出什么东西都说「完美！」太棒了！」——其实你也没看。",
+        suggestion: "建议：对成果也要有要求。"
+      },
+      member: {
+        title: "开心果", 
+        subtitle: "快乐最重要", 
+        tagline: "开心就好啦！", 
+        desc: "你是组内的开心果：DDL前才动工、话多、情绪价值拉满、常有可爱想法。任务做不做另说，快乐就完了。",
+        scene: "组长布置任务，你「收到！太棒了！这个想法太酷了~」「大家加油~」「我有个小建议~」然后去玩了。展示前你说「虽然我做完了但主要靠大家！」配一个笑脸。",
+        suggestion: "建议：开心也要做完。"
+      }
+    },
+    "DVEG": { 
+      leader: {
+        title: "放养话痨情感执行型", 
+        subtitle: "只加油不动手", 
+        tagline: "加油就完事！", 
+        desc: "你是最佛系的组长：不管进度、话多、情绪价值拉满、但自己不动手。组员累成狗，你只会说加油。",
+        scene: "你建群「大家随便做~我支持你们~」「遇到问题找我~」「加油~」然后你就真的只在加油。组员累成狗，你说「大家辛苦了！」组员翻白眼。",
+        suggestion: "建议：适当也动动手。"
+      },
+      member: {
+        title: "加油小天使", 
+        subtitle: "永远的精神支持", 
+        tagline: "加油！你一定行！", 
+        desc: "你是组内的气氛组：话多、加油多、但实际行动不多。常说「加油」「太棒了」但帮不上忙。",
+        scene: "组长说「这个很难」，你说「加油！你可以的！”“需要帮忙吗？”“我精神上支持你！」太棒了！」——最后你没做但组员没怪你。",
+        suggestion: "建议：实际行动也要有。"
+      }
+    },
+    "DSRI": { 
+      leader: {
+        title: "放养沉默结果创意型", 
+        subtitle: "神龙见首不见尾", 
+        tagline: "结果说话", 
+        desc: "你是最神秘的组长：不管进度、沉默少言、只看结果、偶尔冒泡给惊喜。组员不知道你在干嘛，但成果出来时惊呆。",
+        scene: "你把任务发群里然后消失。展示前你突然出现「我做了这个」——然后惊艳全场。组员说「组长是神！」你淡淡回「还行」。",
+        suggestion: "建议：适当也让组员知道你在做什么。"
+      },
+      member: {
+        title: "沉默潜水员", 
+        subtitle: "低调大佬", 
+        tagline: "做就对了", 
+        desc: "你是最靠谱的潜水员：话少但靠谱，DDL前交出完美结果。组长以为你没做，结果你偷偷完成了。",
+        scene: "组长布置任务，你「收到」然后消失。组员问「人呢？」你不在群里。展示前你交了一份完美的方案——组员惊呆问「你什么时候做的？」你说「昨晚」。然后又消失了。",
+        suggestion: "建议：适当也让组长知道你的进度。"
+      }
+    },
+    "DSRG": { 
+      leader: {
+        title: "放养沉默结果执行��", 
+        subtitle: "消失的组长", 
+        tagline: "勿cue", 
+        desc: "你是最神秘的组长：发完任务就消失，只看结果不管过程。组员慌死但找不到你。",
+        scene: "你发任务表然后彻底消失。组员问「组长呢？」没人知道。展示前你出现说「我那部分做完了」然后又消失了。组员说「存在感呢？」答案是没有。",
+        suggestion: "建议：适当保持联系。"
+      },
+      member: {
+        title: "沉默实干家", 
+        subtitle: "不多bb就是干", 
+        tagline: "做就完了", 
+        desc: "你是最靠谱的执行者：话少活多，不问废话做完就走。交代的事一定做好。",
+        scene: "组长布置任务，你「好的」然后消失。组员在群里讨论，你沉默。组长问「你的部分呢？」你直接发文件。组长说「就这么简单？」你说「嗯」。然后继续潜水。",
+        suggestion: "建议：适当也参与讨论。"
+      }
+    },
+    "DSEI": { 
+      leader: {
+        title: "放养沉默情感创意型", 
+        subtitle: "温暖的神秘人", 
+        tagline: "大家开心就好", 
+        desc: "你是最温暖的神秘组长：不怎么说话但偶尔冒出温暖的话，常有创意想法但不说。",
+        scene: "你发计划然后偶尔出来说「大家辛苦了~加油~」「我有个小建议~」然后又消失了。组员崩溃时你突然出现「没关系，慢慢来~我理解~」——组员感动哭。",
+        suggestion: "建议：多出来鼓励大家。"
+      },
+      member: {
+        title: "温暖的存在", 
+        subtitle: "偶尔温暖一下", 
+        tagline: "加油~", 
+        desc: "你是温暖但低调的存在：话不多但很暖心，偶尔出现给人力量。",
+        scene: "组长布置任务，你「好的~」「加油~」「我理解~」然后默默做完自己的部分。组员说「谢谢」你说「应该的~」然后继续潜水。但每次有人低落你都会出现说「没关系~」。",
+        suggestion: "建议：继续保持这份温暖。"
+      }
+    },
+    "DSEG": { 
+      leader: {
+        title: "放养沉默情感执行型", 
+        subtitle: "不管事的老好人", 
+        tagline: "我都可以", 
+        desc: "你是最佛系的组长：什么都行、随便你们、我不打扰。组员觉得你像不存在，但又有点需要。",
+        scene: "你发任务「大家随意~」然后消失。组员问「组长呢？」你不在。展示前你说「都OK~」「我都可以~」「大家开心就好~」——组员说你像不存在。",
+        suggestion: "建议：适当表达看法。"
+      },
+      member: {
+        title: "小透明", 
+        subtitle: "没有存在感", 
+        tagline: "我都行", 
+        desc: "你是最透明的存在：让做什么做什么，不问为什么，也不提意见。配合度高但没有存在感。",
+        scene: "组长说「这个你做」，你说「好的」。组长说「那个也做」，你说「好的」。组长说「这个改5次」，你说「好的」。最后展示你说「我都行~」。组长说「你没有意见吗？」你说「我都行~」。",
+        suggestion: "建议：适当表达想法。"
+      }
+    }
+  };
+
+  let allQuestions = [];
+  let currentQuestion = 0;
+  let answers = [];
+
+  document.getElementById('testBtn').addEventListener('click', function() {
+    showPage('role');
+  });
+
+  document.getElementById('btnLeader').addEventListener('click', function() {
+    userRole = 'leader';
+    startQuiz();
+  });
+
+  document.getElementById('btnMember').addEventListener('click', function() {
+    userRole = 'member';
+    startQuiz();
+  });
+
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(pageId).classList.add('active');
+  }
+
+  function startQuiz() {
+    allQuestions = [...baseQuestions, ...(userRole === 'leader' ? leaderQuestions : memberQuestions)];
+    currentQuestion = 0;
+    answers = [];
+    showPage('quiz');
+    showQuestion();
+  }
+
+  function showQuestion() {
+    const q = allQuestions[currentQuestion];
+    document.getElementById('progressText').textContent = `${currentQuestion + 1}/${allQuestions.length}`;
+    document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / allQuestions.length) * 100}%`;
+    document.getElementById('questionNumber').textContent = `问题 ${currentQuestion + 1}`;
+    document.getElementById('questionText').textContent = q.text;
+    
+    const optionsContainer = document.getElementById('options');
+    optionsContainer.innerHTML = '';
+    
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt.text;
+      btn.onclick = () => selectOption(opt.letter);
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  function selectOption(letter) {
+    answers.push(letter);
+    currentQuestion++;
+    
+    if (currentQuestion < allQuestions.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function calculateType() {
+    const dim1Scores = { C: 0, D: 0 };
+    const dim2Scores = { V: 0, S: 0 };
+    const dim3Scores = { R: 0, E: 0 };
+    const dim4Scores = { I: 0, G: 0 };
+    
+    const dim1Letters = ['C', 'D', 'S'];
+    const dim2Letters = ['V', 'S', 'E'];
+    const dim3Letters = ['R', 'E', 'C'];
+    const dim4Letters = ['I', 'G', 'D'];
+    
+    answers.forEach((ans, i) => {
+      if (i < 10) {
+        if (dim1Letters.includes(ans)) {
+          if (ans === 'C') dim1Scores.C++;
+          else if (ans === 'D') dim1Scores.D++;
+          else dim1Scores.C++;
+        }
+        if (dim2Letters.includes(ans)) {
+          if (ans === 'V') dim2Scores.V++;
+          else if (ans === 'S') dim2Scores.S++;
+          else dim2Scores.E++;
+        }
+        if (dim3Letters.includes(ans)) {
+          if (ans === 'R') dim3Scores.R++;
+          else if (ans === 'E') dim3Scores.E++;
+          else dim3Scores.R++;
+        }
+        if (dim4Letters.includes(ans)) {
+          if (ans === 'I') dim4Scores.I++;
+          else if (ans === 'G') dim4Scores.G++;
+          else dim4Scores.G++;
+        }
+      } else {
+        const roleIdx = i - 10;
+        if (roleIdx === 0) {
+          if (ans === 'C') { dim1Scores.C += 2; }
+          else if (ans === 'D') { dim1Scores.D += 2; }
+          else { dim1Scores.C++; dim2Scores.E++; }
+        } else if (roleIdx === 1) {
+          if (ans === 'C') { dim1Scores.C += 2; dim2Scores.V++; }
+          else if (ans === 'V') { dim2Scores.V += 2; }
+          else { dim4Scores.G += 2; }
+        } else if (roleIdx === 2) {
+          if (ans === 'V') { dim2Scores.V += 2; }
+          else if (ans === 'D') { dim1Scores.D += 2; }
+          else { dim4Scores.I += 2; }
+        } else if (roleIdx === 3) {
+          if (ans === 'C') { dim1Scores.C += 2; }
+          else if (ans === 'D') { dim1Scores.D += 2; }
+          else { dim3Scores.R += 2; }
+        } else if (roleIdx === 4) {
+          if (ans === 'C') { dim1Scores.C += 2; }
+          else if (ans === 'E') { dim2Scores.E += 2; dim3Scores.E++; }
+          else { dim4Scores.I += 2; }
+        }
+      }
+    });
+    
+    let type = '';
+    type += dim1Scores.C >= dim1Scores.D ? 'C' : 'D';
+    type += dim2Scores.V >= dim2Scores.S ? 'V' : 'S';
+    type += dim3Scores.R >= dim3Scores.E ? 'R' : 'E';
+    type += dim4Scores.I >= dim4Scores.G ? 'I' : 'G';
+    
+    return type;
+  }
+
+  function showResult() {
+    const type = calculateType();
+    const result = personalityTypes[type];
+    const roleResult = result[userRole];
+    
+    document.getElementById('resultBadge').textContent = userRole === 'leader' ? '组长人格' : '组员人格';
+    document.getElementById('resultType').textContent = type;
+    document.getElementById('resultTitle').textContent = roleResult.title;
+    document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
+    document.getElementById('resultTagline').textContent = roleResult.tagline;
+    document.getElementById('resultDesc').textContent = roleResult.desc;
+    document.getElementById('resultScene').textContent = roleResult.scene;
+    document.getElementById('resultSuggestion').textContent = roleResult.suggestion;
+    
+    const dim1 = type[0] === 'C' ? '掌控时间型' : '放养时间型';
+    const dim2 = type[1] === 'V' ? '话痨型' : '沉默型';
+    const dim3 = type[2] === 'R' ? '结果导向型' : '情感导向型';
+    const dim4 = type[3] === 'I' ? '创意型' : '执行型';
+    
+    document.getElementById('dim1').textContent = dim1;
+    document.getElementById('dim2').textContent = dim2;
+    document.getElementById('dim3').textContent = dim3;
+    document.getElementById('dim4').textContent = dim4;
+    
+    showPage('result');
+  }
+
+  function showDimensionModal(dim) {
+    const type = document.getElementById('resultType').textContent;
+    const letter = type[dim - 1];
+    const desc = dimensionDescriptions[dim];
+    
+    document.getElementById('modalTitle').textContent = desc.title;
+    document.getElementById('modalText').textContent = desc[letter];
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('active');
+  }
+
+  function shareResult() {
+    const type = document.getElementById('resultType').textContent;
+    const title = document.getElementById('resultTitle').textContent;
+    const text = `我是${type}的「${title}」！GroupTI小组作业人格测试，你也来测测？`;
+    
+    if (navigator.share) {
+      navigator.share({ text });
+    } else {
+      navigator.clipboard.writeText(text);
+      alert('结果已复制到剪贴板！');
+    }
+  }
+
+  function showGallery() {
+    const types = Object.keys(personalityTypes).sort();
+    const currentType = document.getElementById('resultType').textContent;
+    
+    let html = '<div class="gallery-grid">';
+    types.forEach(t => {
+      const isCurrent = t === currentType;
+      html += `<div class="gallery-item ${isCurrent ? 'current' : ''}" onclick="selectFromGallery('${t}')">${t}</div>`;
+    });
+    html += '</div>';
+    
+    document.getElementById('modalTitle').textContent = '人格图鉴';
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function selectFromGallery(type) {
+    closeModal();
+    const result = personalityTypes[type];
+    const roleResult = result[userRole];
+    
+    document.getElementById('resultBadge').textContent = userRole === 'leader' ? '组长人格' : '组员人格';
+    document.getElementById('resultType').textContent = type;
+    document.getElementById('resultTitle').textContent = roleResult.title;
+    document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
+    document.getElementById('resultTagline').textContent = roleResult.tagline;
+    document.getElementById('resultDesc').textContent = roleResult.desc;
+    document.getElementById('resultScene').textContent = roleResult.scene;
+    document.getElementById('resultSuggestion').textContent = roleResult.suggestion;
+    
+    const dim1 = type[0] === 'C' ? '掌控时间型' : '放养时间型';
+    const dim2 = type[1] === 'V' ? '话痨型' : '沉默型';
+    const dim3 = type[2] === 'R' ? '结果导向型' : '情感导向型';
+    const dim4 = type[3] === 'I' ? '创意型' : '执行型';
+    
+    document.getElementById('dim1').textContent = dim1;
+    document.getElementById('dim2').textContent = dim2;
+    document.getElementById('dim3').textContent = dim3;
+    document.getElementById('dim4').textContent = dim4;
+  }
+
+  function restartQuiz() {
+    showPage('welcome');
+  }
+
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
