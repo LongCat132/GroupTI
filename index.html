@@ -1322,7 +1322,7 @@
     document.getElementById('matchResult').classList.remove('show');
     
     showPage('result');
-  }
+}
 
   const matchRules = {
     "CSRG+DSEG": { score: 75, comment: "一个敢扛，一个敢哭，居然能活到期末！" },
@@ -1331,7 +1331,7 @@
     "CVEG+DSRI": { score: 80, comment: "暖心大管家和沉默卷王的双向奔赴！" },
     "DVRG+CVRI": { score: 65, comment: "一个疯狂输出，一个全程掌控，沟通全靠吼！" },
     "DVEI+CSRG": { score: 70, comment: "开心果遇到闷声干大事，这是两个极端！" },
-    "DVEG+CSEG": { score: 60, comment: "加油组长遇到配合天使，氛围拉满但成果随缘！" },
+    "DVEG+CSEG": { score: 60, comment: "加油组长遇到配合天使，氛围组两大天王！" },
     "DSRG+CVEI": { score: 55, comment: "沉默实干家遇到话痨创意人，各玩各的！" },
     "DSEI+CVRG": { score: 50, comment: "温暖独行侠遇到掌控执行者，礼貌但疏离！" },
     "DVRI+CVRG": { score: 70, comment: "自由创意人遇到掌控执行者，想法和落地的碰撞！" },
@@ -1353,6 +1353,45 @@
     "CSRG+DVRI": { score: 60, comment: "老黄牛遇到甩手掌柜，心累！" },
     "CSEG+DSEI": { score: 80, comment: "配合天使遇到温暖存在，互相体谅！" },
     "DSEI+CSRG": { score: 55, comment: "温暖独行侠遇到闷声干活，礼貌但各忙各的！" },
+    "CVEI+CSRI": { score: 70, comment: "话痨开心果遇到低调卷王，一个敢说一个敢做！" },
+    "CVEG+DVRI": { score: 55, comment: "操心组长遇到甩手掌柜，心操稀碎！" },
+    "DVEI+DSRI": { score: 65, comment: "开心果遇到沉默卷王，DDL前才动工！" },
+    "CSRG+CVRG": { score: 85, comment: "闷声干大事遇到执行力拉满，双倍靠谱！" },
+    "CVEG+DSRG": { score: 70, comment: "暖心组长遇到靠谱执行者，安心组合！" },
+    "CSEG+DVRI": { score: 55, comment: "配合天使遇到甩手掌柜，只有加油声！" },
+    "DSRG+DVEI": { score: 60, comment: "沉默实干遇到开心果，一个沉默一个闹！" },
+    "DVRI+CSEG": { score: 50, comment: "甩手掌柜遇到配合天使，氛围到位但..." },
+    "CVRG+DVRG": { score: 80, comment: "靠谱执行+话痨加油，完美互补！" },
+    "CVRI+CVRG": { score: 75, comment: "掌控狂魔遇到靠谱执行，这波在大气层！" },
+    "CSRI+DVRG": { score: 55, comment: "低调卷王遇到话痨，只能说666！" },
+    "CVEG+DVEI": { score: 70, comment: "操心组长遇到开心果，痛并快乐着！" },
+    "DVEG+DSRG": { score: 65, comment: "加油党遇到闷声干大事，一个看一个做！" },
+    "CSEG+DSRI": { score: 75, comment: "配合天使遇到沉默卷王，躺平也能赢！" },
+    "DSRG+CVEG": { score: 70, comment: "靠谱执行遇到暖心组长，稳稳的幸福！" },
+    "DSEG+CSRI": { score: 60, comment: "小透明遇到低调卷王存在感为零！" },
+    "CVEI+DVRG": { score: 65, comment: "话痨+加油党，群里热闹但没人动！" },
+    "DSRI+CVRG": { score: 85, comment: "沉默卷王遇到靠谱执行，强强联手！" },
+    "CVRI+CSEG": { score: 55, comment: "掌控狂魔遇到配合天使，操心的命！" },
+    "DSRG+DVEG": { score: 60, comment: "靠谱执行+加油党，这是什么混搭？" },
+    "DVRG+CVEG": { score: 65, comment: "加油党遇到暖心组长，氛围有了！" },
+    "CSEG+CVRG": { score: 80, comment: "配合天使遇到靠谱执行，躺赢组合！" },
+    "CVEG+CVRG": { score: 75, comment: "暖心组长+靠谱执行，温暖又靠谱！" },
+    "DVRG+DSRI": { score: 60, comment: "加油党遇到沉默卷王，DDL前的奇迹！" },
+    "DSRI+DVRG": { score: 55, comment: "沉默卷王+加油党，神仙难救！" },
+    "CSEG+DVRG": { score: 70, comment: "配合天使+加油党，氛围组天花板！" },
+    "DVRI+CVRI": { score: 50, comment: "两个甩手掌柜，谁来干活？" },
+    "CVEI+CVRI": { score: 55, comment: "两个话痨，群里999+！" },
+    "CVRG+CVRG": { score: 100, comment: "复制人组合！完美同步！" },
+    "DSRG+DSRG": { score: 80, comment: "双倍靠谱，沉默是金！" },
+    "CSEG+CSEG": { score: 90, comment: "两个配合天使，这是什么天使组合！" },
+    "DVRG+DVRG": { score: 40, comment: "两个加油党，纯纯氛围组！" },
+    "DVRI+DVRI": { score: 30, comment: "两个甩手掌柜，祝你们平安..." },
+    "CSRI+CSRI": { score: 85, comment: "双倍低调，卷王对卷王！" },
+    "DSRI+DSRI": { score: 75, comment: "潜水双雄，沉默是最大的默契！" },
+    "CSEG+DSRG": { score: 70, comment: "配合天使+靠谱执行，稳稳稳！" },
+    "DSRG+CSEG": { score: 70, comment: "靠谱+配合，这波在第五层！" },
+    "DVEI+DVEI": { score: 45, comment: "两个开心果，只有开心没有活！" },
+    "DSEG+DSEG": { score: 35, comment: "两个小透明，谁也不认识谁..." },
   };
 
   function calculateMatch() {
