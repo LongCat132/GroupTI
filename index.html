@@ -568,6 +568,7 @@
         <div class="share-section">
           <button class="share-btn" onclick="shareResult()">分享结果</button>
           <button class="share-btn" onclick="showGallery()">人格图鉴</button>
+          <button class="share-btn" onclick="showScores()">维度得分</button>
           <br>
           <button class="restart-btn" onclick="restartQuiz()">再做一次</button>
         </div>
@@ -1073,6 +1074,7 @@
   let allQuestions = [];
   let currentQuestion = 0;
   let answers = [];
+  let lastScores = {};
 
   document.getElementById('testBtn').addEventListener('click', function() {
     showPage('role');
@@ -1196,6 +1198,8 @@
     type += dim3Scores.R >= dim3Scores.E ? 'R' : 'E';
     type += dim4Scores.I >= dim4Scores.G ? 'I' : 'G';
     
+    lastScores = { dim1Scores, dim2Scores, dim3Scores, dim4Scores };
+    
     return type;
   }
 
@@ -1265,6 +1269,68 @@
     html += '</div>';
     
     document.getElementById('modalTitle').textContent = '人格图鉴';
+    document.getElementById('modalText').innerHTML = html;
+    document.getElementById('modal').classList.add('active');
+  }
+
+  function showScores() {
+    const s = lastScores;
+    const total = s.dim1Scores.C + s.dim1Scores.D || 1;
+    const total2 = s.dim2Scores.V + s.dim2Scores.S + s.dim2Scores.E || 1;
+    const total3 = s.dim3Scores.R + s.dim3Scores.E || 1;
+    const total4 = s.dim4Scores.I + s.dim4Scores.G || 1;
+    
+    const c = Math.round(s.dim1Scores.C / total * 100);
+    const d = Math.round(s.dim1Scores.D / total * 100);
+    const v = Math.round(s.dim2Scores.V / total2 * 100);
+    const ss = Math.round((s.dim2Scores.S + s.dim2Scores.E) / total2 * 100);
+    const r = Math.round(s.dim3Scores.R / total3 * 100);
+    const e = Math.round(s.dim3Scores.E / total3 * 100);
+    const i = Math.round(s.dim4Scores.I / total4 * 100);
+    const g = Math.round(s.dim4Scores.G / total4 * 100);
+    
+    let html = `
+      <div style="text-align: left;">
+        <div style="margin-bottom: 20px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <strong>时间态度 - C / D</strong>
+            <span>${c}% / ${d}%</span>
+          </div>
+          <div style="background:var(--border);height:8px;border-radius:4px;">
+            <div style="width:${c}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <strong>沟通方式 - V / S</strong>
+            <span>${v}% / ${ss}%</span>
+          </div>
+          <div style="background:var(--border);height:8px;border-radius:4px;">
+            <div style="width:${v}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div style="margin-bottom: 20px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <strong>决策风格 - R / E</strong>
+            <span>${r}% / ${e}%</span>
+          </div>
+          <div style="background:var(--border);height:8px;border-radius:4px;">
+            <div style="width:${r}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <strong>执行偏好 - I / G</strong>
+            <span>${i}% / ${g}%</span>
+          </div>
+          <div style="background:var(--border);height:8px;border-radius:4px;">
+            <div style="width:${i}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('modalTitle').textContent = '维度得分详情';
     document.getElementById('modalText').innerHTML = html;
     document.getElementById('modal').classList.add('active');
   }
