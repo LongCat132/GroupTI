@@ -1275,19 +1275,32 @@
 
   function showScores() {
     const s = lastScores;
-    const total = s.dim1Scores.C + s.dim1Scores.D || 1;
-    const total2 = s.dim2Scores.V + s.dim2Scores.S + s.dim2Scores.E || 1;
-    const total3 = s.dim3Scores.R + s.dim3Scores.E || 1;
-    const total4 = s.dim4Scores.I + s.dim4Scores.G || 1;
     
-    const c = Math.round(s.dim1Scores.C / total * 100);
-    const d = Math.round(s.dim1Scores.D / total * 100);
-    const v = Math.round(s.dim2Scores.V / total2 * 100);
-    const ss = Math.round((s.dim2Scores.S + s.dim2Scores.E) / total2 * 100);
-    const r = Math.round(s.dim3Scores.R / total3 * 100);
-    const e = Math.round(s.dim3Scores.E / total3 * 100);
-    const i = Math.round(s.dim4Scores.I / total4 * 100);
-    const g = Math.round(s.dim4Scores.G / total4 * 100);
+    const tc = Number(s.dim1Scores?.C) || 0;
+    const td = Number(s.dim1Scores?.D) || 0;
+    const t1 = tc + td || 1;
+    
+    const tv = Number(s.dim2Scores?.V) || 0;
+    const ts = Number(s.dim2Scores?.S) || 0;
+    const te = Number(s.dim2Scores?.E) || 0;
+    const t2 = tv + ts + te || 1;
+    
+    const tr = Number(s.dim3Scores?.R) || 0;
+    const te3 = Number(s.dim3Scores?.E) || 0;
+    const t3 = tr + te3 || 1;
+    
+    const ti = Number(s.dim4Scores?.I) || 0;
+    const tg = Number(s.dim4Scores?.G) || 0;
+    const t4 = ti + tg || 1;
+    
+    const c = Math.round(tc / t1 * 100);
+    const d = Math.round(td / t1 * 100);
+    const v = Math.round(tv / t2 * 100);
+    const ss = Math.round((ts + te) / t2 * 100);
+    const r = Math.round(tr / t3 * 100);
+    const e = Math.round(te3 / t3 * 100);
+    const i = Math.round(ti / t4 * 100);
+    const g = Math.round(tg / t4 * 100);
     
     let html = `
       <div style="text-align: left;">
