@@ -1324,42 +1324,35 @@
     showPage('result');
   }
 
-  const matchComments = {
-    perfect: [
-      "天作之合！你们就是小组作业界的的神雕侠侣！",
-      "这配合，简直就是失散多年的兄妹！",
-      "你们在一起，DDL见了都要绕道走！",
-      "其他组员：他们是不是提前对过剧本？",
-      "这就是传说中的最佳拍档吗？爱了爱了！"
-    ],
-    good: [
-      "还不错，至少不会被退货！",
-      "可以是可以，就是过程可能会有点坎坷...",
-      "沟通一下还是能过的，配合需加强！",
-      "至少不会掀桌子，还算有救！",
-      "瑕不掩瑜，好好调教还是能打的！"
-    ],
-    normal: [
-      "平平淡淡才是真，别要求太高！",
-      "中将就着用吧，还能离咋地？",
-      "也就是及格边缘，dddd！",
-      "能做完就不错了，要啥自行车？",
-      "别想太多，做完就行！"
-    ],
-    bad: [
-      "你们这是在渡劫吗？",
-      "建议换个组员，或者重组吧！",
-      "这配合，做完不把人送走就算成功！",
-      "展示当天记得买保险！",
-      "祝你们平安度过这次小组作业..."
-    ],
-    terrible: [
-      "快跑！这是一个有预谋的陷阱！",
-      "我只能帮到这里了，自求多福吧！",
-      "建议直接退组，还来得及！",
-      "这可能是你们最后一次合作了，珍惜吧！",
-      "水逆期间，宜静不宜动！"
-    ]
+  const matchRules = {
+    "CSRG+DSEG": { score: 75, comment: "一个敢扛，一个敢哭，居然能活到期末！" },
+    "CVRI+DVRG": { score: 85, comment: "卷王遇到加油党，真是绝杀！" },
+    "CVRG+DSRI": { score: 90, comment: "靠谱组长遇到沉默卷王，执行力拉满！" },
+    "CVEG+DSRI": { score: 80, comment: "暖心大管家和沉默卷王的双向奔赴！" },
+    "DVRG+CVRI": { score: 65, comment: "一个疯狂输出，一个全程掌控，沟通全靠吼！" },
+    "DVEI+CSRG": { score: 70, comment: "开心果遇到闷声干大事，这是两个极端！" },
+    "DVEG+CSEG": { score: 60, comment: "加油组长遇到配合天使，氛围拉满但成果随缘！" },
+    "DSRG+CVEI": { score: 55, comment: "沉默实干家遇到话痨创意人，各玩各的！" },
+    "DSEI+CVRG": { score: 50, comment: "温暖独行侠遇到掌控执行者，礼貌但疏离！" },
+    "DVRI+CVRG": { score: 70, comment: "自由创意人遇到掌控执行者，想法和落地的碰撞！" },
+    "DSRI+CVEG": { score: 65, comment: "低调大佬遇到操心组长，默契度刚刚好！" },
+    "CVEI+DSRG": { score: 60, comment: "话痨开心果遇到沉默实干家，你开心就好！" },
+    "CVRG+DVRG": { score: 95, comment: "执行力+加油党，这是什么神仙组合！" },
+    "CVRI+DSRG": { score: 80, comment: "掌控一切遇到闷声干活，这是什么完美搭配！" },
+    "CSEG+DVRG": { score: 75, comment: "配合天使遇到加油党，氛围组两大天王！" },
+    "CVRG+DVEI": { score: 65, comment: "执行狂魔遇到开心果，没心没肺的快乐！" },
+    "CVRI+DVEG": { score: 45, comment: "掌控狂魔遇到只加油不做事，心累！" },
+    "DVRI+CSRG": { score: 70, comment: "甩手掌柜遇到靠谱执行者，操碎了心！" },
+    "DSRG+DVRG": { score: 55, comment: "沉默实干遇到加油党，一个做事一个看！" },
+    "DVRG+CSRG": { score: 60, comment: "加油组长遇到靠谱组员，配合还行！" },
+    "CVEI+DVEG": { score: 85, comment: "话痨遇到话痨，群里999+但没人干活！" },
+    "CSRI+DVEG": { score: 65, comment: "低调卷王遇到加油党，卷了个寂寞！" },
+    "DSRI+CVEG": { score: 70, comment: "沉默卷王遇到操心组长，安全感满满！" },
+    "DSEG+CVRI": { score: 50, comment: "小透明遇到掌控狂魔，压力山大！" },
+    "CVRG+DSRI": { score: 90, comment: "靠谱执行遇到沉默卷王 yyds！" },
+    "CSRG+DVRI": { score: 60, comment: "老黄牛遇到甩手掌柜，心累！" },
+    "CSEG+DSEI": { score: 80, comment: "配合天使遇到温暖存在，互相体谅！" },
+    "DSEI+CSRG": { score: 55, comment: "温暖独行侠遇到闷声干活，礼貌但各忙各的！" },
   };
 
   function calculateMatch() {
@@ -1371,55 +1364,53 @@
       return;
     }
     
-    const myD1 = myType[0];
-    const myD2 = myType[1];
-    const myD3 = myType[2];
-    const myD4 = myType[3];
+    const key1 = myType + "+" + otherType;
+    const key2 = otherType + "+" + myType;
+    const ruleKey = matchRules[key1] ? key1 : matchRules[key2] ? key2 : null;
     
-    const otherD1 = otherType[0];
-    const otherD2 = otherType[1];
-    const otherD3 = otherType[2];
-    const otherD4 = otherType[3];
+    let score, comment;
     
-    let score = 0;
+    if (ruleKey) {
+      const rule = matchRules[ruleKey];
+      score = rule.score;
+      comment = rule.comment;
+    } else {
+      const myD1 = myType[0];
+      const otherD1 = otherType[0];
+      
+      score = 50;
+      if (myD1 === otherD1) score += 20;
+      else if ((myD1 === 'C' && otherD1 === 'D') || (myD1 === 'D' && otherD1 === 'C')) score += 10;
+      
+      if (myType[1] === otherType[1]) score += 15;
+      if (myType[2] === otherType[2]) score += 10;
+      if (myType[3] === otherType[3]) score += 15;
+      
+      const defaultComments = [
+        "两个陌生人，两个世界，各凭本事！",
+        "能做完就不错了，要什么自行车？",
+        "中将就着用吧，dddd！",
+        "别想太多，干就完了！",
+        "平平淡淡，过完就好！"
+      ];
+      comment = defaultComments[Math.floor(Math.random() * defaultComments.length)];
+    }
     
-    if (myD1 === otherD1) score += 30;
-    else if (myD1 === 'C' && otherD1 === 'D') score += 10;
-    else if (myD1 === 'D' && otherD1 === 'C') score += 5;
+    score = Math.min(100, Math.max(0, score));
     
-    if (myD2 === otherD2) score += 25;
-    else if (myD2 !== otherD2) score += 15;
+    let s;
+    if (score >= 85) s = 'perfect';
+    else if (score >= 70) s = 'good';
+    else if (score >= 50) s = 'normal';
+    else s = 'bad';
     
-    if (myD3 === otherD3) score += 20;
-    else score += 10;
+    const colors = { perfect: '#4CAF50', good: '#8BC34A', normal: '#FFC107', bad: '#FF9800' };
+    const labels = { perfect: '天作之合', good: '还不错', normal: '中将就', bad: '有点悬' };
     
-    if (myD4 === otherD4) score += 25;
-    else score += 10;
-    
-    const [s, comments] = getMatchLevel(score);
-    const colors = { perfect: '#4CAF50', good: '#8BC34A', normal: '#FFC107', bad: '#FF9800', terrible: '#f44336' };
-    
-    let html = `<div class="match-result show"><div class="match-score" style="color:${colors[s]}">${score}%</div><div class="match-label">${getMatchLabel(s)}</div><div class="match-comment">${comments}</div></div>`;
+    let html = `<div class="match-result show"><div class="match-score" style="color:${colors[s]}">${score}%</div><div class="match-label">${labels[s]}</div><div class="match-comment">${comment}</div></div>`;
     
     document.getElementById('matchResult').innerHTML = html;
     document.getElementById('matchResult').classList.add('show');
-  }
-
-  function getMatchLevel(score) {
-    if (score >= 90) return [score, randomFrom(matchComments.perfect)];
-    if (score >= 70) return [score, randomFrom(matchComments.good)];
-    if (score >= 50) return [score, randomFrom(matchComments.normal)];
-    if (score >= 30) return [score, randomFrom(matchComments.bad)];
-    return [score, randomFrom(matchComments.terrible)];
-  }
-
-  function getMatchLabel(s) {
-    const labels = { perfect: '天作之合', good: '还不错', normal: '中将就', bad: '渡劫中', terrible: '快跑' };
-    return labels[s];
-  }
-
-  function randomFrom(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
   }
 
   function showDimensionModal(dim) {
