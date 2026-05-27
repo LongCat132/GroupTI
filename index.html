@@ -7,17 +7,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
   <style>
     :root {
-      --primary: #1a1a2e;
-      --accent: #e94560;
-      --bg: #0f0f1a;
-      --card-bg: #16162a;
+      --primary: #17151f;
+      --accent: #ff3f5f;
+      --warning: #f6c85f;
+      --cyan: #7de2d1;
+      --bg: #09090d;
+      --card-bg: #15131d;
       --text: #ffffff;
-      --text-muted: #a0a0b0;
-      --border: #2a2a4a;
+      --text-muted: #aaa5b5;
+      --border: #343142;
+      --border-strong: #5c5367;
+      --ink: #0b0b10;
     }
 
     * {
@@ -35,15 +37,31 @@
       justify-content: center;
       align-items: flex-start;
       padding: 20px;
-      background-image: 
-        radial-gradient(ellipse at 20% 0%, rgba(233, 69, 96, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 100%, rgba(26, 26, 46, 0.8) 0%, transparent 50%);
+      background-image:
+        linear-gradient(135deg, rgba(255, 63, 95, 0.13), transparent 32%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 22%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 32px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 32px);
+      letter-spacing: 0;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(180deg, rgba(255,255,255,0.018) 0 1px, transparent 1px 4px);
+      opacity: 0.45;
+      z-index: 0;
     }
 
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 680px;
       margin-top: 40px;
+      position: relative;
+      z-index: 1;
     }
 
     .page {
@@ -66,15 +84,35 @@
     }
 
     .logo {
-      font-size: 80px;
+      width: 96px;
+      height: 96px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 26px;
+      font-weight: 700;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      transform: rotate(-2deg);
+      box-shadow: 8px 8px 0 rgba(255, 63, 95, 0.16);
+    }
+
+    .system-kicker {
+      color: var(--warning);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.18em;
       margin-bottom: 20px;
     }
 
     .title {
-      font-size: 48px;
+      font-size: 56px;
       font-weight: 700;
       margin-bottom: 10px;
-      background: linear-gradient(135deg, var(--text), var(--accent));
+      background: linear-gradient(135deg, var(--text), var(--accent), var(--warning));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -83,16 +121,33 @@
     .subtitle {
       font-size: 20px;
       color: var(--text-muted);
-      margin-bottom: 30px;
+      margin-bottom: 24px;
     }
 
     .intro {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 24px;
       margin-bottom: 30px;
       text-align: left;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro::before,
+    .question-card::before,
+    .result-description::before,
+    .scene-card::before,
+    .match-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--warning), transparent);
     }
 
     .intro h3 {
@@ -105,21 +160,80 @@
       color: var(--text-muted);
     }
 
+    .case-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: -12px 0 26px;
+    }
+
+    .case-chip {
+      border: 1px dashed var(--border-strong);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: center;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .privacy-panel {
+      margin: -12px 0 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .privacy-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .privacy-toggle input {
+      accent-color: var(--accent);
+    }
+
+    .debug-badge {
+      display: none;
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 200;
+      padding: 7px 12px;
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      background: rgba(15, 15, 26, 0.92);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .debug-badge.show {
+      display: block;
+    }
+
     .btn {
       background: var(--accent);
       color: var(--text);
-      border: none;
+      border: 1px solid rgba(255,255,255,0.18);
       padding: 16px 48px;
       font-size: 18px;
-      border-radius: 50px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all 0.3s ease;
-      font-weight: 500;
+      font-weight: 700;
+      box-shadow: 6px 6px 0 rgba(255, 63, 95, 0.2);
     }
 
     .btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 30px rgba(233, 69, 96, 0.4);
+      transform: translate(-2px, -2px);
+      box-shadow: 10px 10px 0 rgba(255, 63, 95, 0.22);
     }
 
     .role-btn {
@@ -127,7 +241,7 @@
       width: 100%;
       background: var(--card-bg);
       border: 2px solid var(--border);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 20px;
       margin-bottom: 16px;
       cursor: pointer;
@@ -136,11 +250,15 @@
 
     .role-btn:hover {
       border-color: var(--accent);
-      transform: translateY(-2px);
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 rgba(255, 63, 95, 0.16);
     }
 
     .role-icon {
-      font-size: 40px;
+      font-size: 22px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: var(--warning);
+      letter-spacing: 0.16em;
       display: block;
       margin-bottom: 10px;
     }
@@ -167,34 +285,46 @@
 
     .progress-text {
       font-size: 14px;
-      color: var(--text-muted);
+      color: var(--warning);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     .progress-bar {
       flex: 1;
       height: 6px;
       background: var(--border);
-      border-radius: 3px;
+      border-radius: 0;
       margin-left: 16px;
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      background: var(--accent);
+      background: linear-gradient(90deg, var(--accent), var(--warning));
       transition: width 0.3s ease;
     }
 
     .question-card {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 30px;
       border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
     }
 
     .question-number {
       color: var(--accent);
       font-size: 14px;
+      margin-bottom: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      letter-spacing: 0.12em;
+    }
+
+    .question-kicker {
+      color: var(--warning);
+      font-size: 12px;
+      font-weight: 700;
       margin-bottom: 10px;
     }
 
@@ -214,7 +344,7 @@
     .option-btn {
       background: var(--bg);
       border: 2px solid var(--border);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 16px 20px;
       text-align: left;
       cursor: pointer;
@@ -226,7 +356,8 @@
 
     .option-btn:hover {
       border-color: var(--accent);
-      transform: translateX(4px);
+      transform: translateX(4px) rotate(-0.3deg);
+      background: rgba(255, 63, 95, 0.08);
     }
 
     .result {
@@ -234,25 +365,43 @@
       padding: 20px;
     }
 
+    .result-report-kicker {
+      color: var(--warning);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      margin-bottom: 10px;
+    }
+
+    .result-sample {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
     .result-badge {
       display: inline-block;
       background: var(--accent);
       color: var(--text);
       padding: 8px 20px;
-      border-radius: 50px;
+      border-radius: 8px;
       font-size: 14px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
+      font-weight: 700;
+      transform: rotate(-1deg);
     }
 
     .result-type {
-      font-size: 64px;
+      font-size: 78px;
       font-weight: 700;
       margin-bottom: 10px;
       color: var(--accent);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      text-shadow: 4px 4px 0 rgba(255, 63, 95, 0.18);
     }
 
     .result-title {
-      font-size: 24px;
+      font-size: 28px;
       margin-bottom: 8px;
     }
 
@@ -280,10 +429,11 @@
     .dimension-item {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 16px;
       cursor: pointer;
       transition: all 0.3s ease;
+      text-align: left;
     }
 
     .dimension-item:hover {
@@ -310,18 +460,33 @@
 
     .result-description {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 24px;
       margin-bottom: 20px;
       border: 1px solid var(--border);
       text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-label {
+      color: var(--warning);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-bottom: 12px;
     }
 
     .result-tagline {
-      font-size: 20px;
-      font-weight: 500;
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 700;
       color: var(--accent);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 63, 95, 0.45);
+      border-radius: 6px;
+      padding: 8px 10px;
+      background: rgba(255, 63, 95, 0.08);
     }
 
     .result-desc {
@@ -330,31 +495,51 @@
     }
 
     .scene-card {
-      background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(26, 26, 46, 0.5));
+      background: linear-gradient(135deg, rgba(255, 63, 95, 0.1), rgba(246, 200, 95, 0.06));
       border: 1px solid var(--accent);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 24px;
       margin-bottom: 20px;
       text-align: left;
+      position: relative;
+      overflow: hidden;
     }
 
     .scene-title {
       font-size: 14px;
-      color: var(--accent);
+      color: var(--warning);
       margin-bottom: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
     }
 
     .result-suggestion {
       background: var(--card-bg);
-      border-radius: 12px;
+      border-radius: 8px;
       padding: 16px;
       margin-bottom: 20px;
       color: var(--text-muted);
       font-size: 14px;
+      border: 1px dashed var(--border-strong);
+      text-align: left;
+    }
+
+    .result-suggestion::before {
+      content: "组队建议";
+      display: block;
+      color: var(--warning);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
     }
 
     .share-section {
       margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
     }
 
     .share-btn {
@@ -362,10 +547,9 @@
       border: 1px solid var(--border);
       color: var(--text);
       padding: 12px 24px;
-      border-radius: 50px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      margin: 0 6px;
       transition: all 0.3s ease;
     }
 
@@ -378,10 +562,9 @@
       border: 1px solid var(--border);
       color: var(--text-muted);
       padding: 12px 24px;
-      border-radius: 50px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
-      margin: 0 6px;
       transition: all 0.3s ease;
     }
 
@@ -391,11 +574,13 @@
 
     .match-section {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 24px;
       margin-top: 20px;
       border: 1px solid var(--border);
       text-align: left;
+      position: relative;
+      overflow: hidden;
     }
 
     .match-title {
@@ -425,6 +610,7 @@
       color: var(--text);
       font-size: 16px;
       text-transform: uppercase;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     .match-input:focus {
@@ -444,18 +630,29 @@
 
     .match-result {
       padding: 16px;
-      border-radius: 12px;
+      border-radius: 8px;
       display: none;
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--border);
     }
 
     .match-result.show {
       display: block;
     }
 
+    .match-error {
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: -6px;
+      margin-bottom: 12px;
+      min-height: 20px;
+    }
+
     .match-score {
       font-size: 32px;
       font-weight: 700;
       margin-bottom: 8px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     }
 
     .match-label {
@@ -488,7 +685,7 @@
 
     .modal-content {
       background: var(--card-bg);
-      border-radius: 16px;
+      border-radius: 8px;
       padding: 30px;
       max-width: 90%;
       max-height: 80%;
@@ -521,8 +718,8 @@
 
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
       margin-top: 16px;
     }
 
@@ -530,11 +727,31 @@
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 12px 8px;
-      text-align: center;
+      padding: 12px;
+      text-align: left;
       cursor: pointer;
       transition: all 0.3s ease;
       font-size: 12px;
+    }
+
+    .gallery-code {
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .gallery-name {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .gallery-subtitle {
+      color: var(--text-muted);
+      font-size: 11px;
+      line-height: 1.4;
     }
 
     .gallery-item:hover {
@@ -546,45 +763,90 @@
       background: rgba(233, 69, 96, 0.1);
     }
 
+    .card-preview {
+      width: min(100%, 360px);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      display: block;
+      margin: 0 auto 18px;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .download-link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .card-note {
+      margin: 0 0 14px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
     @media (max-width: 480px) {
       .title { font-size: 36px; }
+      .case-strip { grid-template-columns: 1fr; }
       .dimension-items { grid-template-columns: 1fr; }
-      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .match-input-wrapper { flex-direction: column; }
     }
   </style>
 </head>
 <body>
+  <div class="debug-badge" id="debugBadge"></div>
   <div class="container">
     <!-- Welcome Page -->
     <div class="page active" id="welcome">
       <div class="welcome">
-        <div class="logo">📚</div>
+        <div class="logo">GTI</div>
+        <div class="system-kicker">GROUP TASK INCIDENT ARCHIVE</div>
         <h1 class="title">GroupTI</h1>
-        <p class="subtitle">小组作业人格测试</p>
+        <p class="subtitle">小组作业人格鉴定中心</p>
         <div class="intro">
-          <h3>什么是 GroupTI？</h3>
-          <p>你是否曾在小组作业中遇到过「已读不回」的组员？或者自己就是那个一个人扛下所有的冤种组长？GroupTI将帮你解锁专属人格类型——从「催命DDL阎罗王」到「死线隐身术大宗师」，总有一款适合你。</p>
+          <h3>事故档案开启</h3>
+          <p>这里不是普通心理测试，而是一套过分严肃的小组作业事故鉴定系统。系统将根据你的供词，判断你在群聊沉默、DDL逼近、共享文档反复崩溃时最可能暴露的人格编号。</p>
         </div>
-        <button class="btn" id="testBtn">开始测试</button>
+        <div class="case-strip">
+          <div class="case-chip">DDL 风险评估</div>
+          <div class="case-chip">群聊异常记录</div>
+          <div class="case-chip">组队存活预测</div>
+        </div>
+        <div class="privacy-panel">
+          <p>完成测试后会匿名记录结果、答案和浏览器信息，用于统计人格分布与题目调试。</p>
+          <label class="privacy-toggle">
+            <input type="checkbox" id="dataConsent" checked>
+            <span>允许本次匿名记录</span>
+          </label>
+        </div>
+        <button class="btn" id="testBtn">开始精神损耗评估</button>
       </div>
     </div>
 
     <!-- Role Selection -->
     <div class="page" id="role">
       <div class="welcome">
-        <div class="logo">🤔</div>
-        <h1 class="title">选择你的角色</h1>
-        <p class="subtitle">你在小组作业中通常担任？</p>
+        <div class="logo">ID</div>
+        <div class="system-kicker">IDENTITY CHECK</div>
+        <h1 class="title">确认涉案身份</h1>
+        <p class="subtitle">系统需要确认你在事故中的位置</p>
         <div class="intro" style="text-align: center;">
           <button class="role-btn" id="btnLeader">
-            <span class="role-icon">👑</span>
-            <span class="role-text">组长 / 负责人</span>
-            <span class="role-desc">主导分工、统筹进度、催作业</span>
+            <span class="role-icon">LEAD</span>
+            <span class="role-text">组长 / 事故总负责人</span>
+            <span class="role-desc">主导分工、统筹进度、催作业、负责最后背锅</span>
           </button>
           <button class="role-btn" id="btnMember">
-            <span class="role-icon">👤</span>
-            <span class="role-text">组员 / 执行者</span>
-            <span class="role-desc">接受任务、完成分配、听安排</span>
+            <span class="role-icon">MEM</span>
+            <span class="role-text">组员 / 现场执行人员</span>
+            <span class="role-desc">接受任务、完成分配、在群聊里留下证据</span>
           </button>
         </div>
       </div>
@@ -593,13 +855,14 @@
     <!-- Quiz Page -->
     <div class="page" id="quiz">
       <div class="quiz-header">
-        <span class="progress-text" id="progressText">1/10</span>
+        <span class="progress-text" id="progressText">1/15</span>
         <div class="progress-bar">
-          <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+          <div class="progress-fill" id="progressFill" style="width: 6.67%"></div>
         </div>
       </div>
       <div class="question-card">
         <div class="question-number" id="questionNumber">问题 1</div>
+        <div class="question-kicker">事故情景复现</div>
         <div class="question-text" id="questionText"></div>
         <div class="options" id="options"></div>
       </div>
@@ -608,6 +871,8 @@
     <!-- Result Page -->
     <div class="page" id="result">
       <div class="result">
+        <div class="result-report-kicker">GROUPTI INCIDENT REPORT</div>
+        <div class="result-sample" id="resultSample"></div>
         <div class="result-badge" id="resultBadge"></div>
         <div class="result-type" id="resultType"></div>
         <h2 class="result-title" id="resultTitle"></h2>
@@ -636,31 +901,35 @@
         </div>
 
         <div class="result-description">
+          <div class="section-label">典型症状</div>
           <p class="result-tagline" id="resultTagline"></p>
           <p id="resultDesc"></p>
         </div>
 
         <div class="scene-card">
-          <div class="scene-title">名场面</div>
+          <div class="scene-title">高发案发现场</div>
           <p id="resultScene"></p>
         </div>
 
         <p class="result-suggestion" id="resultSuggestion"></p>
 
         <div class="share-section">
-          <button class="share-btn" onclick="shareResult()">分享结果</button>
+          <button class="share-btn" onclick="shareResult()">分享文字</button>
+          <button class="share-btn" onclick="copyType()">复制类型</button>
+          <button class="share-btn" onclick="showResultCard()">生成图片</button>
+          <button class="share-btn" onclick="showScores()">得分详情</button>
           <button class="share-btn" onclick="showGallery()">人格图鉴</button>
-          <br>
           <button class="restart-btn" onclick="restartQuiz()">再做一次</button>
         </div>
 
         <div class="match-section" id="matchSection">
-          <h3 class="match-title">匹配查询</h3>
+          <h3 class="match-title">组队事故预测</h3>
           <p class="match-hint" id="matchHint"></p>
           <div class="match-input-wrapper">
-            <input type="text" id="matchInput" class="match-input" placeholder="输入对方的人格类型（如CVRI）" maxlength="4">
-            <button class="match-btn" onclick="calculateMatch()">查询</button>
+            <input type="text" id="matchInput" class="match-input" placeholder="输入人格编号（如CVRI）" maxlength="4">
+            <button class="match-btn" onclick="calculateMatch()">预测</button>
           </div>
+          <div class="match-error" id="matchError"></div>
           <div class="match-result" id="matchResult"></div>
         </div>
       </div>
@@ -671,26 +940,20 @@
       <div class="modal-content">
         <button class="modal-close" onclick="closeModal()">&times;</button>
         <h3 class="modal-title" id="modalTitle"></h3>
-        <p class="modal-text" id="modalText"></p>
+        <div class="modal-text" id="modalText"></div>
       </div>
     </div>
   </div>
 
 <script>
-  // Firebase 配置
-  const firebaseConfig = {
-    apiKey: "AIzaSyAHYehIVZX_anqSieGEv2MSrHo-ku0HREg",
-    authDomain: "groupti-eb54f.firebaseapp.com",
-    projectId: "groupti-eb54f",
-    storageBucket: "groupti-eb54f.firebasestorage.app",
-    messagingSenderId: "259766861501",
-    appId: "1:259766861501:web:d88b01baf0801ae365c1d4",
-    measurementId: "G-HPXCVRZSS1"
-  };
-
-  // 初始化 Firebase
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+  const DATA_ENDPOINT = 'https://script.google.com/macros/s/AKfycbzw_EFA_2Z3Nzks3cH0A3KiwfTHfC-W8Yd3PA2dzvejneXWtueOTJm6XU5dotVbv1QWwQ/exec';
+  const SCHEMA_VERSION = 1;
+  const QUESTION_VERSION = '2026-05-26-weighted-v1';
+  const SHARE_URL = 'https://longcat132.github.io/GroupTI/';
+  const urlParams = new URLSearchParams(window.location.search);
+  const debugParam = urlParams.get('debug');
+  const isDebugMode = debugParam === '1' || urlParams.get('test') === '1' || window.location.hash === '#debug';
+  const isDebugCollectMode = debugParam === 'collect';
 
   let userRole = '';
   
@@ -866,7 +1129,7 @@
   const dimensionDescriptions = {
     1: {
       title: "时间态度",
-      C: "掌控时间型 - 提前���划���未雨绸缪永远是你的信条。你会把DDL踩在脚下，而不是被DDL踩在脚下。",
+      C: "掌控时间型 - 提前规划，未雨绸缪永远是你的信条。你会把DDL踩在脚下，而不是被DDL踩在脚下。",
       D: "放养时间型 - DDL是你的好朋友，不到最后一刻绝对不动工。传说中的DDL Fighter就是你。"
     },
     2: {
@@ -1063,7 +1326,7 @@
         subtitle: "精神支持第一人", 
         tagline: "加油！你可以的！", 
         desc: "你是气氛组组长：话多、情绪价值给满、但实际行动不多。常说「加油」「太棒了」「没问题」然后没然后了。",
-        scene: "组长说「这个周五交」，你说「收到！加油！」「大家太棒了！”“我可以帮忙吗？」——然后你没有做。组��说��你做了什么？」你说「我提供了情绪价值啊！」",
+        scene: "组长说「这个周五交」，你说「收到！加油！」「大家太棒了！」「我可以帮忙吗？」——然后你没有做。组长说「你做了什么？」你说「我提供了情绪价值啊！」",
         suggestion: "建议：实际行动也要有。"
       }
     },
@@ -1099,7 +1362,7 @@
         subtitle: "永远的精神支持", 
         tagline: "加油！你一定行！", 
         desc: "你是组内的气氛组：话多、加油多、但实际行动不多。常说「加油」「太棒了」但帮不上忙。",
-        scene: "组长说「这个很难」，你说「加油！你可以的！”“需要帮忙吗？”“我精神上支持你！」太棒了！」——最后你没做但组员没怪你。",
+        scene: "组长说「这个很难」，你说「加油！你可以的！」「需要帮忙吗？」「我精神上支持你！」——最后你没做但组员没怪你。",
         suggestion: "建议：实际行动也要有。"
       }
     },
@@ -1123,7 +1386,7 @@
     },
     "DSRG": { 
       leader: {
-        title: "放养沉默结果执行��", 
+        title: "放养沉默结果执行型", 
         subtitle: "消失的组长", 
         tagline: "勿cue", 
         desc: "你是最神秘的组长：发完任务就消失，只看结果不管过程。组员慌死但找不到你。",
@@ -1181,10 +1444,95 @@
   let currentQuestion = 0;
   let answers = [];
   let lastScores = {};
+  let resultCardUrl = '';
+
+  const ROLE_QUESTION_WEIGHT = 1.5;
+  const scoreCalibration = {
+    leader: {
+      time: 0.5,
+      communication: 2.3,
+      decision: -1.5,
+      execution: -0.55
+    },
+    member: {
+      time: -0.8,
+      communication: 1.9,
+      decision: -2,
+      execution: -0.6
+    }
+  };
+  const scoreOverrides = {
+    "base:0:0": { C: 1, R: 0.4, G: 0.2 },
+    "base:0:1": { D: 1 },
+    "base:0:2": { E: 1, V: 0.4, D: 0.2 },
+    "base:1:0": { G: 1, E: 0.3 },
+    "base:1:1": { D: 1, E: 0.4 },
+    "base:1:2": { I: 1, R: 0.3 },
+    "base:2:0": { C: 1, G: 0.4, S: 0.2 },
+    "base:2:1": { V: 1, I: 0.4 },
+    "base:2:2": { S: 1, D: 0.3 },
+    "base:3:0": { V: 1, C: 0.4 },
+    "base:3:1": { G: 1, E: 0.4 },
+    "base:3:2": { E: 1, V: 0.3, D: 0.2 },
+    "base:4:0": { R: 1, C: 0.4 },
+    "base:4:1": { E: 1, V: 0.2 },
+    "base:4:2": { I: 1, V: 0.2 },
+    "base:5:0": { R: 1, V: 0.3 },
+    "base:5:1": { E: 1, D: 0.2 },
+    "base:5:2": { C: 1, R: 0.4 },
+    "base:6:0": { G: 1, E: 0.3 },
+    "base:6:1": { V: 1, G: 0.4 },
+    "base:6:2": { D: 1 },
+    "base:7:0": { D: 1 },
+    "base:7:1": { G: 1, C: 0.4 },
+    "base:7:2": { I: 1, V: 0.3 },
+    "base:8:0": { C: 1, G: 0.4 },
+    "base:8:1": { R: 1 },
+    "base:8:2": { E: 1, D: 0.3 },
+    "base:9:0": { V: 1, C: 0.2 },
+    "base:9:1": { S: 1 },
+    "base:9:2": { D: 1, S: 0.4 },
+    "leader:10:0": { C: 1, G: 0.3 },
+    "leader:10:1": { D: 1, E: 0.2 },
+    "leader:10:2": { E: 1, C: 0.3 },
+    "leader:11:0": { C: 1, R: 0.4, V: 0.2 },
+    "leader:11:1": { V: 1, E: 0.4 },
+    "leader:11:2": { G: 1, E: 0.3 },
+    "leader:12:0": { V: 1, C: 0.4 },
+    "leader:12:1": { D: 1, S: 0.3 },
+    "leader:12:2": { I: 1, E: 0.2 },
+    "leader:13:0": { C: 1, G: 0.2 },
+    "leader:13:1": { D: 1 },
+    "leader:13:2": { R: 1, G: 0.3 },
+    "leader:14:0": { C: 1, R: 0.3 },
+    "leader:14:1": { E: 1, V: 0.4 },
+    "leader:14:2": { I: 1, V: 0.2 },
+    "member:10:0": { G: 1, C: 0.2 },
+    "member:10:1": { E: 1, V: 0.2 },
+    "member:10:2": { I: 1, D: 0.2 },
+    "member:11:0": { V: 1, G: 0.3 },
+    "member:11:1": { D: 1, E: 0.2 },
+    "member:11:2": { S: 1, G: 0.3 },
+    "member:12:0": { R: 1, G: 0.4 },
+    "member:12:1": { I: 1 },
+    "member:12:2": { E: 1, V: 0.3 },
+    "member:13:0": { C: 1, R: 0.3 },
+    "member:13:1": { E: 1, V: 0.2 },
+    "member:13:2": { I: 1, V: 0.3 },
+    "member:14:0": { G: 1, E: 0.3 },
+    "member:14:1": { V: 1, E: 0.2 },
+    "member:14:2": { D: 1, S: 0.2 }
+  };
 
   document.getElementById('testBtn').addEventListener('click', function() {
     showPage('role');
   });
+
+  if (isDebugMode || isDebugCollectMode) {
+    const debugBadge = document.getElementById('debugBadge');
+    debugBadge.textContent = isDebugCollectMode ? 'DEBUG COLLECT' : 'DEBUG';
+    debugBadge.classList.add('show');
+  }
 
   document.getElementById('btnLeader').addEventListener('click', function() {
     userRole = 'leader';
@@ -1194,6 +1542,23 @@
   document.getElementById('btnMember').addEventListener('click', function() {
     userRole = 'member';
     startQuiz();
+  });
+
+  document.getElementById('matchInput').addEventListener('input', function() {
+    const normalized = this.value.toUpperCase().replace(/[^CDVSREIG]/g, '').slice(0, 4);
+    this.value = normalized;
+    document.getElementById('matchError').textContent = '';
+    document.getElementById('matchResult').classList.remove('show');
+
+    if (normalized.length === 4) {
+      calculateMatch({ silent: true });
+    }
+  });
+
+  document.getElementById('matchInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+      calculateMatch();
+    }
   });
 
   function showPage(pageId) {
@@ -1213,7 +1578,7 @@
     const q = allQuestions[currentQuestion];
     document.getElementById('progressText').textContent = `${currentQuestion + 1}/${allQuestions.length}`;
     document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / allQuestions.length) * 100}%`;
-    document.getElementById('questionNumber').textContent = `问题 ${currentQuestion + 1}`;
+    document.getElementById('questionNumber').textContent = `CASE ${String(currentQuestion + 1).padStart(2, '0')} / ${allQuestions.length}`;
     document.getElementById('questionText').textContent = q.text;
     
     const optionsContainer = document.getElementById('options');
@@ -1223,13 +1588,23 @@
       const btn = document.createElement('button');
       btn.className = 'option-btn';
       btn.textContent = opt.text;
-      btn.onclick = () => selectOption(opt.letter);
+      btn.onclick = () => selectOption(opt, i);
       optionsContainer.appendChild(btn);
     });
   }
 
-  function selectOption(letter) {
-    answers.push(letter);
+  function getOptionScores(questionIndex, optionIndex, option) {
+    const scope = questionIndex < baseQuestions.length ? 'base' : userRole;
+    const override = scoreOverrides[`${scope}:${questionIndex}:${optionIndex}`];
+    return override || { [option.letter]: 1 };
+  }
+
+  function selectOption(option, optionIndex) {
+    answers.push({
+      letter: option.letter,
+      text: option.text,
+      scores: getOptionScores(currentQuestion, optionIndex, option)
+    });
     currentQuestion++;
     
     if (currentQuestion < allQuestions.length) {
@@ -1244,69 +1619,42 @@
     const dim2Scores = { V: 0, S: 0 };
     const dim3Scores = { R: 0, E: 0 };
     const dim4Scores = { I: 0, G: 0 };
-    
-    const dim1Letters = ['C', 'D', 'S'];
-    const dim2Letters = ['V', 'S', 'E'];
-    const dim3Letters = ['R', 'E', 'C'];
-    const dim4Letters = ['I', 'G', 'D'];
-    
-    answers.forEach((ans, i) => {
-      if (i < 10) {
-        if (dim1Letters.includes(ans)) {
-          if (ans === 'C') dim1Scores.C++;
-          else if (ans === 'D') dim1Scores.D++;
-          else dim1Scores.C++;
-        }
-        if (dim2Letters.includes(ans)) {
-          if (ans === 'V') dim2Scores.V++;
-          else if (ans === 'S') dim2Scores.S++;
-          else dim2Scores.E++;
-        }
-        if (dim3Letters.includes(ans)) {
-          if (ans === 'R') dim3Scores.R++;
-          else if (ans === 'E') dim3Scores.E++;
-          else dim3Scores.R++;
-        }
-        if (dim4Letters.includes(ans)) {
-          if (ans === 'I') dim4Scores.I++;
-          else if (ans === 'G') dim4Scores.G++;
-          else dim4Scores.G++;
-        }
-      } else {
-        const roleIdx = i - 10;
-        if (roleIdx === 0) {
-          if (ans === 'C') { dim1Scores.C += 2; }
-          else if (ans === 'D') { dim1Scores.D += 2; }
-          else { dim1Scores.C++; dim2Scores.E++; }
-        } else if (roleIdx === 1) {
-          if (ans === 'C') { dim1Scores.C += 2; dim2Scores.V++; }
-          else if (ans === 'V') { dim2Scores.V += 2; }
-          else { dim4Scores.G += 2; }
-        } else if (roleIdx === 2) {
-          if (ans === 'V') { dim2Scores.V += 2; }
-          else if (ans === 'D') { dim1Scores.D += 2; }
-          else { dim4Scores.I += 2; }
-        } else if (roleIdx === 3) {
-          if (ans === 'C') { dim1Scores.C += 2; }
-          else if (ans === 'D') { dim1Scores.D += 2; }
-          else { dim3Scores.R += 2; }
-        } else if (roleIdx === 4) {
-          if (ans === 'C') { dim1Scores.C += 2; }
-          else if (ans === 'E') { dim2Scores.E += 2; dim3Scores.E++; }
-          else { dim4Scores.I += 2; }
-        }
-      }
+
+    const scoreTargets = {
+      C: dim1Scores,
+      D: dim1Scores,
+      V: dim2Scores,
+      S: dim2Scores,
+      R: dim3Scores,
+      E: dim3Scores,
+      I: dim4Scores,
+      G: dim4Scores
+    };
+
+    answers.forEach((answer, i) => {
+      const weight = i < baseQuestions.length ? 1 : ROLE_QUESTION_WEIGHT;
+
+      Object.entries(answer.scores).forEach(([letter, score]) => {
+        const target = scoreTargets[letter];
+        if (!target) return;
+        target[letter] += score * weight;
+      });
     });
     
+    const calibration = scoreCalibration[userRole] || scoreCalibration.member;
     let type = '';
-    type += dim1Scores.C >= dim1Scores.D ? 'C' : 'D';
-    type += dim2Scores.V >= dim2Scores.S ? 'V' : 'S';
-    type += dim3Scores.R >= dim3Scores.E ? 'R' : 'E';
-    type += dim4Scores.I >= dim4Scores.G ? 'I' : 'G';
+    type += pickDimension(dim1Scores.C, dim1Scores.D, 'C', 'D', calibration.time);
+    type += pickDimension(dim2Scores.V, dim2Scores.S, 'V', 'S', calibration.communication);
+    type += pickDimension(dim3Scores.R, dim3Scores.E, 'R', 'E', calibration.decision);
+    type += pickDimension(dim4Scores.I, dim4Scores.G, 'I', 'G', calibration.execution);
     
     lastScores = { dim1Scores, dim2Scores, dim3Scores, dim4Scores };
     
     return type;
+  }
+
+  function pickDimension(leftScore, rightScore, leftLetter, rightLetter, threshold) {
+    return leftScore >= rightScore + threshold ? leftLetter : rightLetter;
   }
 
   function showResult() {
@@ -1315,6 +1663,7 @@
     const roleResult = result[userRole];
     
     document.getElementById('resultBadge').textContent = userRole === 'leader' ? '组长人格' : '组员人格';
+    document.getElementById('resultSample').textContent = `样本编号：${type}-${new Date().getMonth() + 1}${String(new Date().getDate()).padStart(2, '0')} · 鉴定结论已生成`;
     document.getElementById('resultType').textContent = type;
     document.getElementById('resultTitle').textContent = roleResult.title;
     document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
@@ -1334,40 +1683,59 @@
     document.getElementById('dim4').textContent = dim4;
     
     const expectedRole = userRole === 'leader' ? '组员' : '组长';
-    document.getElementById('matchHint').textContent = `输入${expectedRole}的人格类型，看看你们的匹配度如何？`;
+    document.getElementById('matchHint').textContent = `输入${expectedRole}的人格编号，预测你们的小组作业存活率。`;
     document.getElementById('matchInput').value = '';
+    document.getElementById('matchError').textContent = '';
     document.getElementById('matchResult').classList.remove('show');
     
 showPage('result');
     
-    // 保存结果到 Firebase
-    saveResultToFirebase(type, answers);
+    saveResult(type, answers);
   }
 
-  function saveResultToFirebase(type, answers) {
-    if (!db) return;
-    
+  function saveResult(type, answers) {
+    if (isDebugMode) {
+      console.log('调试模式：已跳过结果收集');
+      return;
+    }
+
+    if (!document.getElementById('dataConsent').checked) {
+      console.log('用户选择本次不记录，已跳过结果收集');
+      return;
+    }
+
+    if (!DATA_ENDPOINT) return;
+
     const resultData = {
-      type: type,
+      schemaVersion: SCHEMA_VERSION,
+      questionVersion: QUESTION_VERSION,
+      type,
       role: userRole,
-      answers: answers,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      userAgent: navigator.userAgent
+      answers: answers.map(answer => answer.letter),
+      answerDetails: answers,
+      scores: lastScores,
+      debug: isDebugCollectMode,
+      collectionMode: isDebugCollectMode ? 'debug-collect' : 'normal',
+      pageUrl: location.href,
+      userAgent: navigator.userAgent,
+      createdAtClient: new Date().toISOString()
     };
-    
-    db.collection('results').add(resultData)
-      .then(() => {
-        console.log('结果已保存到 Firebase');
-      })
-      .catch((error) => {
-        console.error('保存失败:', error);
-      });
+
+    fetch(DATA_ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8'
+      },
+      body: JSON.stringify(resultData)
+    }).catch(error => {
+      console.warn('结果收集失败:', error);
+    });
   }
 
   const matchRules = {
     "CSRG+DSEG": { score: 75, comment: "一个敢扛，一个敢哭，居然能活到期末！" },
     "CVRI+DVRG": { score: 85, comment: "卷王遇到加油党，真是绝杀！" },
-    "CVRG+DSRI": { score: 90, comment: "靠谱组长遇到沉默卷王，执行力拉满！" },
     "CVEG+DSRI": { score: 80, comment: "暖心大管家和沉默卷王的双向奔赴！" },
     "DVRG+CVRI": { score: 65, comment: "一个疯狂输出，一个全程掌控，沟通全靠吼！" },
     "DVEI+CSRG": { score: 70, comment: "开心果遇到闷声干大事，这是两个极端！" },
@@ -1375,11 +1743,8 @@ showPage('result');
     "DSRG+CVEI": { score: 55, comment: "沉默实干家遇到话痨创意人，各玩各的！" },
     "DSEI+CVRG": { score: 50, comment: "温暖独行侠遇到掌控执行者，礼貌但疏离！" },
     "DVRI+CVRG": { score: 70, comment: "自由创意人遇到掌控执行者，想法和落地的碰撞！" },
-    "DSRI+CVEG": { score: 65, comment: "低调大佬遇到操心组长，默契度刚刚好！" },
     "CVEI+DSRG": { score: 60, comment: "话痨开心果遇到沉默实干家，你开心就好！" },
-    "CVRG+DVRG": { score: 95, comment: "执行力+加油党，这是什么神仙组合！" },
     "CVRI+DSRG": { score: 80, comment: "掌控一切遇到闷声干活，这是什么完美搭配！" },
-    "CSEG+DVRG": { score: 75, comment: "配合天使遇到加油党，氛围组两大天王！" },
     "CVRG+DVEI": { score: 65, comment: "执行狂魔遇到开心果，没心没肺的快乐！" },
     "CVRI+DVEG": { score: 45, comment: "掌控狂魔遇到只加油不做事，心累！" },
     "DVRI+CSRG": { score: 70, comment: "甩手掌柜遇到靠谱执行者，操碎了心！" },
@@ -1434,14 +1799,18 @@ showPage('result');
     "DSEG+DSEG": { score: 35, comment: "两个小透明，谁也不认识谁..." },
   };
 
-  function calculateMatch() {
+  function calculateMatch(options = {}) {
     const myType = document.getElementById('resultType').textContent;
     const otherType = document.getElementById('matchInput').value.toUpperCase().trim();
+    const errorEl = document.getElementById('matchError');
     
     if (!otherType || otherType.length !== 4 || !personalityTypes[otherType]) {
-      alert('请输入正确的人格类型（如CVRI）');
+      errorEl.textContent = options.silent ? '这个类型不存在，检查一下字母组合。' : '请输入正确的人格类型（如CVRI）';
+      document.getElementById('matchResult').classList.remove('show');
       return;
     }
+
+    errorEl.textContent = '';
     
     const key1 = myType + "+" + otherType;
     const key2 = otherType + "+" + myType;
@@ -1483,10 +1852,10 @@ showPage('result');
     else if (score >= 50) s = 'normal';
     else s = 'bad';
     
-    const colors = { perfect: '#4CAF50', good: '#8BC34A', normal: '#FFC107', bad: '#FF9800' };
-    const labels = { perfect: '天作之合', good: '还不错', normal: '中将就', bad: '有点悬' };
+    const colors = { perfect: '#7de2d1', good: '#8BC34A', normal: '#FFC107', bad: '#ff3f5f' };
+    const labels = { perfect: '可直接建群', good: '建议备份文件', normal: '需定期抢救', bad: '慎重组队' };
     
-    let html = `<div class="match-result show"><div class="match-score" style="color:${colors[s]}">${score}%</div><div class="match-label">${labels[s]}</div><div class="match-comment">${comment}</div></div>`;
+    let html = `<div class="match-result show"><div class="match-score" style="color:${colors[s]}">存活率 ${score}%</div><div class="match-label">事故等级：${labels[s]}</div><div class="match-comment">${comment}</div></div>`;
     
     document.getElementById('matchResult').innerHTML = html;
     document.getElementById('matchResult').classList.add('show');
@@ -1509,13 +1878,231 @@ showPage('result');
   function shareResult() {
     const type = document.getElementById('resultType').textContent;
     const title = document.getElementById('resultTitle').textContent;
-    const text = `我是${type}的「${title}」！GroupTI小组作业人格测试，你也来测测？`;
+    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的编号：${SHARE_URL}`;
     
     if (navigator.share) {
       navigator.share({ text });
     } else {
       navigator.clipboard.writeText(text);
       alert('结果已复制到剪贴板！');
+    }
+  }
+
+  async function copyType() {
+    const type = document.getElementById('resultType').textContent;
+    const title = document.getElementById('resultTitle').textContent;
+    const text = `${type}｜${title}`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('人格类型已复制！');
+    } catch (error) {
+      alert(`你的人格类型是：${text}`);
+    }
+  }
+
+  function getScoreRows() {
+    const s = lastScores;
+
+    const tc = Number(s.dim1Scores?.C) || 0;
+    const td = Number(s.dim1Scores?.D) || 0;
+    const tv = Number(s.dim2Scores?.V) || 0;
+    const ts = Number(s.dim2Scores?.S) || 0;
+    const tr = Number(s.dim3Scores?.R) || 0;
+    const te = Number(s.dim3Scores?.E) || 0;
+    const ti = Number(s.dim4Scores?.I) || 0;
+    const tg = Number(s.dim4Scores?.G) || 0;
+
+    return [
+      { label: '时间态度', left: 'C', right: 'D', leftValue: tc, rightValue: td },
+      { label: '沟通方式', left: 'V', right: 'S', leftValue: tv, rightValue: ts },
+      { label: '决策风格', left: 'R', right: 'E', leftValue: tr, rightValue: te },
+      { label: '执行偏好', left: 'I', right: 'G', leftValue: ti, rightValue: tg }
+    ].map(row => {
+      const total = row.leftValue + row.rightValue || 1;
+      return {
+        ...row,
+        leftPercent: Math.round(row.leftValue / total * 100),
+        rightPercent: Math.round(row.rightValue / total * 100)
+      };
+    });
+  }
+
+  function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    let line = '';
+    let lines = [];
+
+    for (const char of text) {
+      const testLine = line + char;
+      if (ctx.measureText(testLine).width > maxWidth && line) {
+        lines.push(line);
+        line = char;
+      } else {
+        line = testLine;
+      }
+
+      if (lines.length === maxLines) break;
+    }
+
+    if (line && lines.length < maxLines) lines.push(line);
+    if (lines.length === maxLines && text.length > lines.join('').length) {
+      lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1) + '…';
+    }
+
+    lines.forEach((lineText, index) => {
+      ctx.fillText(lineText, x, y + index * lineHeight);
+    });
+
+    return y + lines.length * lineHeight;
+  }
+
+  function fillRoundRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function createResultCardBlob() {
+    return new Promise(resolve => {
+      const type = document.getElementById('resultType').textContent;
+      const title = document.getElementById('resultTitle').textContent;
+      const subtitle = document.getElementById('resultSubtitle').textContent;
+      const tagline = document.getElementById('resultTagline').textContent;
+      const desc = document.getElementById('resultDesc').textContent;
+      const scene = document.getElementById('resultScene').textContent;
+      const roleLabel = userRole === 'leader' ? '组长人格' : '组员人格';
+      const dimensions = [
+        ['时间态度', document.getElementById('dim1').textContent],
+        ['沟通方式', document.getElementById('dim2').textContent],
+        ['决策风格', document.getElementById('dim3').textContent],
+        ['执行偏好', document.getElementById('dim4').textContent]
+      ];
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 900;
+      canvas.height = 1200;
+      const ctx = canvas.getContext('2d');
+      const bg = ctx.createLinearGradient(0, 0, 900, 1200);
+      bg.addColorStop(0, '#151525');
+      bg.addColorStop(0.58, '#0f0f1a');
+      bg.addColorStop(1, '#261a2a');
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, 0, 900, 1200);
+
+      const glow = ctx.createRadialGradient(720, 130, 20, 720, 130, 360);
+      glow.addColorStop(0, 'rgba(233, 69, 96, 0.36)');
+      glow.addColorStop(1, 'rgba(233, 69, 96, 0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, 900, 520);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 42px "Noto Sans SC", sans-serif';
+      ctx.fillText('GroupTI', 72, 68);
+      ctx.fillStyle = '#e94560';
+      fillRoundRect(ctx, 72, 92, 150, 42, 21);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 22px "Noto Sans SC", sans-serif';
+      ctx.fillText(roleLabel, 98, 121);
+      ctx.font = '400 24px "Noto Sans SC", sans-serif';
+      ctx.fillStyle = '#a0a0b0';
+      ctx.fillText('小组作业事故鉴定报告', 244, 121);
+
+      ctx.fillStyle = '#e94560';
+      ctx.font = '700 132px "Noto Sans SC", sans-serif';
+      ctx.fillText(type, 72, 190);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 42px "Noto Sans SC", sans-serif';
+      wrapCanvasText(ctx, title, 72, 344, 756, 54, 2);
+      ctx.fillStyle = '#a0a0b0';
+      ctx.font = '400 28px "Noto Sans SC", sans-serif';
+      wrapCanvasText(ctx, subtitle, 72, 456, 756, 40, 2);
+
+      ctx.fillStyle = 'rgba(255,255,255,0.06)';
+      fillRoundRect(ctx, 72, 545, 756, 150, 24);
+      ctx.fillStyle = '#e94560';
+      ctx.font = '700 30px "Noto Sans SC", sans-serif';
+      wrapCanvasText(ctx, tagline, 104, 578, 692, 40, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '400 24px "Noto Sans SC", sans-serif';
+      wrapCanvasText(ctx, desc, 104, 626, 692, 34, 2);
+
+      dimensions.forEach((item, index) => {
+        const x = 72 + (index % 2) * 392;
+        const y = 742 + Math.floor(index / 2) * 112;
+        ctx.fillStyle = 'rgba(233,69,96,0.12)';
+        fillRoundRect(ctx, x, y, 364, 82, 18);
+        ctx.fillStyle = '#a0a0b0';
+        ctx.font = '400 20px "Noto Sans SC", sans-serif';
+        ctx.fillText(item[0], x + 24, y + 18);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '700 26px "Noto Sans SC", sans-serif';
+        ctx.fillText(item[1], x + 24, y + 46);
+      });
+
+      ctx.fillStyle = '#e94560';
+      ctx.font = '700 24px "Noto Sans SC", sans-serif';
+      ctx.fillText('名场面', 72, 990);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '400 24px "Noto Sans SC", sans-serif';
+      wrapCanvasText(ctx, scene, 72, 1030, 756, 34, 3);
+
+      ctx.fillStyle = '#a0a0b0';
+      ctx.font = '400 22px "Noto Sans SC", sans-serif';
+      ctx.fillText('进入小组作业人格鉴定中心', 72, 1130);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '700 22px "Noto Sans SC", sans-serif';
+      ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1162);
+
+      canvas.toBlob(resolve, 'image/png');
+    });
+  }
+
+  async function showResultCard() {
+    document.getElementById('modalTitle').textContent = '结果卡片';
+    document.getElementById('modalText').innerHTML = '<p>正在生成图片...</p>';
+    document.getElementById('modal').classList.add('active');
+
+    const blob = await createResultCardBlob();
+    if (!blob) {
+      document.getElementById('modalText').textContent = '图片生成失败，请稍后再试。';
+      return;
+    }
+
+    if (resultCardUrl) URL.revokeObjectURL(resultCardUrl);
+    resultCardUrl = URL.createObjectURL(blob);
+    const type = document.getElementById('resultType').textContent;
+    document.getElementById('modalText').innerHTML = `
+      <img class="card-preview" src="${resultCardUrl}" alt="GroupTI结果卡片">
+      <p class="card-note">图片底部已带测试地址：${SHARE_URL.replace(/^https?:\/\//, '')}</p>
+      <div class="card-actions">
+        <a class="share-btn download-link" href="${resultCardUrl}" download="GroupTI-${type}.png">保存图片</a>
+        <button class="share-btn" onclick="shareResultCardImage()">分享图片</button>
+      </div>
+    `;
+  }
+
+  async function shareResultCardImage() {
+    const blob = await createResultCardBlob();
+    const type = document.getElementById('resultType').textContent;
+    const title = document.getElementById('resultTitle').textContent;
+    const file = new File([blob], `GroupTI-${type}.png`, { type: 'image/png' });
+    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的编号：${SHARE_URL}`;
+
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], text });
+    } else {
+      await navigator.clipboard.writeText(text);
+      alert('当前浏览器不支持直接分享图片，已复制分享文案。');
     }
   }
 
@@ -1526,7 +2113,14 @@ showPage('result');
     let html = '<div class="gallery-grid">';
     types.forEach(t => {
       const isCurrent = t === currentType;
-      html += `<div class="gallery-item ${isCurrent ? 'current' : ''}" onclick="selectFromGallery('${t}')">${t}</div>`;
+      const roleResult = personalityTypes[t][userRole];
+      html += `
+        <div class="gallery-item ${isCurrent ? 'current' : ''}" onclick="selectFromGallery('${t}')">
+          <div class="gallery-code">${t}</div>
+          <div class="gallery-name">${roleResult.title}</div>
+          <div class="gallery-subtitle">${roleResult.subtitle}</div>
+        </div>
+      `;
     });
     html += '</div>';
     
@@ -1536,72 +2130,21 @@ showPage('result');
   }
 
   function showScores() {
-    const s = lastScores;
-    
-    const tc = Number(s.dim1Scores?.C) || 0;
-    const td = Number(s.dim1Scores?.D) || 0;
-    const t1 = tc + td || 1;
-    
-    const tv = Number(s.dim2Scores?.V) || 0;
-    const ts = Number(s.dim2Scores?.S) || 0;
-    const te = Number(s.dim2Scores?.E) || 0;
-    const t2 = tv + ts + te || 1;
-    
-    const tr = Number(s.dim3Scores?.R) || 0;
-    const te3 = Number(s.dim3Scores?.E) || 0;
-    const t3 = tr + te3 || 1;
-    
-    const ti = Number(s.dim4Scores?.I) || 0;
-    const tg = Number(s.dim4Scores?.G) || 0;
-    const t4 = ti + tg || 1;
-    
-    const c = Math.round(tc / t1 * 100);
-    const d = Math.round(td / t1 * 100);
-    const v = Math.round(tv / t2 * 100);
-    const ss = Math.round((ts + te) / t2 * 100);
-    const r = Math.round(tr / t3 * 100);
-    const e = Math.round(te3 / t3 * 100);
-    const i = Math.round(ti / t4 * 100);
-    const g = Math.round(tg / t4 * 100);
+    const rows = getScoreRows();
     
     let html = `
       <div style="text-align: left;">
-        <div style="margin-bottom: 20px;">
+        ${rows.map(row => `
+        <div style="margin-bottom:20px;">
           <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <strong>时间态度 - C / D</strong>
-            <span>${c}% / ${d}%</span>
+            <strong>${row.label} - ${row.left} / ${row.right}</strong>
+            <span>${row.leftPercent}% / ${row.rightPercent}%</span>
           </div>
           <div style="background:var(--border);height:8px;border-radius:4px;">
-            <div style="width:${c}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+            <div style="width:${row.leftPercent}%;background:var(--accent);height:100%;border-radius:4px;"></div>
           </div>
         </div>
-        <div style="margin-bottom: 20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <strong>沟通方式 - V / S</strong>
-            <span>${v}% / ${ss}%</span>
-          </div>
-          <div style="background:var(--border);height:8px;border-radius:4px;">
-            <div style="width:${v}%;background:var(--accent);height:100%;border-radius:4px;"></div>
-          </div>
-        </div>
-        <div style="margin-bottom: 20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <strong>决策风格 - R / E</strong>
-            <span>${r}% / ${e}%</span>
-          </div>
-          <div style="background:var(--border);height:8px;border-radius:4px;">
-            <div style="width:${r}%;background:var(--accent);height:100%;border-radius:4px;"></div>
-          </div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <strong>执行偏好 - I / G</strong>
-            <span>${i}% / ${g}%</span>
-          </div>
-          <div style="background:var(--border);height:8px;border-radius:4px;">
-            <div style="width:${i}%;background:var(--accent);height:100%;border-radius:4px;"></div>
-          </div>
-        </div>
+        `).join('')}
       </div>
     `;
     
