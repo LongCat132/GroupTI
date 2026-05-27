@@ -400,9 +400,24 @@
       text-shadow: 4px 4px 0 rgba(255, 63, 95, 0.18);
     }
 
+    .result-title-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
     .result-title {
       font-size: 28px;
-      margin-bottom: 8px;
+      margin: 0;
+    }
+
+    .result-strict {
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
 
     .result-subtitle {
@@ -687,11 +702,15 @@
       background: var(--card-bg);
       border-radius: 8px;
       padding: 30px;
-      max-width: 90%;
+      width: min(92vw, 560px);
       max-height: 80%;
       overflow-y: auto;
       position: relative;
       border: 1px solid var(--border);
+    }
+
+    .modal-content.wide {
+      width: min(94vw, 720px);
     }
 
     .modal-close {
@@ -714,6 +733,52 @@
     .modal-text {
       line-height: 1.8;
       color: var(--text-muted);
+    }
+
+    .score-detail {
+      text-align: left;
+      display: grid;
+      gap: 18px;
+    }
+
+    .score-row {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .score-meta {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .score-title {
+      color: var(--text);
+      font-weight: 700;
+      min-width: 0;
+    }
+
+    .score-value {
+      color: var(--warning);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      white-space: nowrap;
+    }
+
+    .score-track {
+      background: var(--border);
+      height: 9px;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .score-fill {
+      background: linear-gradient(90deg, var(--accent), var(--warning));
+      height: 100%;
+      border-radius: 999px;
     }
 
     .gallery-grid {
@@ -797,6 +862,15 @@
       .dimension-items { grid-template-columns: 1fr; }
       .gallery-grid { grid-template-columns: 1fr; }
       .match-input-wrapper { flex-direction: column; }
+      .modal-content,
+      .modal-content.wide {
+        width: 94vw;
+        padding: 24px 18px;
+      }
+      .score-meta {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
     }
   </style>
 </head>
@@ -812,7 +886,7 @@
         <p class="subtitle">小组作业人格鉴定中心</p>
         <div class="intro">
           <h3>事故档案开启</h3>
-          <p>这里不是普通心理测试，而是一套过分严肃的小组作业事故鉴定系统。系统将根据你的供词，判断你在群聊沉默、DDL逼近、共享文档反复崩溃时最可能暴露的人格编号。</p>
+          <p>这里不是普通心理测试，而是一套过分严肃的小组作业事故鉴定系统。系统将根据你的供词，判断你在群聊沉默、DDL逼近、共享文档反复崩溃时最可能暴露的人格特质。</p>
         </div>
         <div class="case-strip">
           <div class="case-chip">DDL 风险评估</div>
@@ -875,7 +949,10 @@
         <div class="result-sample" id="resultSample"></div>
         <div class="result-badge" id="resultBadge"></div>
         <div class="result-type" id="resultType"></div>
-        <h2 class="result-title" id="resultTitle"></h2>
+        <div class="result-title-row">
+          <h2 class="result-title" id="resultTitle"></h2>
+          <span class="result-strict" id="resultStrict"></span>
+        </div>
         <p class="result-subtitle" id="resultSubtitle"></p>
         
         <div class="dimensions">
@@ -926,7 +1003,7 @@
           <h3 class="match-title">组队事故预测</h3>
           <p class="match-hint" id="matchHint"></p>
           <div class="match-input-wrapper">
-            <input type="text" id="matchInput" class="match-input" placeholder="输入人格编号（如CVRI）" maxlength="4">
+            <input type="text" id="matchInput" class="match-input" placeholder="输入人格特质（如CVRI）" maxlength="4">
             <button class="match-btn" onclick="calculateMatch()">预测</button>
           </div>
           <div class="match-error" id="matchError"></div>
@@ -1027,7 +1104,7 @@
       options: [
         { letter: 'C', text: "检查三遍格式、标点、参考文献" },
         { letter: 'R', text: "只要内容OK就行，格式浮云" },
-        { letter: 'E', text: "先发朋友圈庆祝，作业再说" }
+        { letter: 'E', text: "先发朋友圈庆祝，复盘再说" }
       ]
     },
     {
@@ -1117,7 +1194,7 @@
       ]
     },
     {
-      text: "组员摆烂，你会？",
+      text: "其他组员摆烂，你会？",
       options: [
         { letter: 'G', text: "自己默默做完" },
         { letter: 'V', text: "在群里阴阳怪气" },
@@ -1152,7 +1229,7 @@
   const personalityTypes = {
     "CVRI": { 
       leader: {
-        title: "掌控话痨结果创意型", 
+        title: "全能掌控官", 
         subtitle: "全部都要掌控在自己手里", 
         tagline: "我全都要！", 
         desc: "你是组内最强势的组长，所有事情都要按你的来。沟通要频繁，结果要完美，还要有创意。组员怕你，但成果确实牛。",
@@ -1160,7 +1237,7 @@
         suggestion: "建议：适当放权，让组员也有发挥空间。"
       },
       member: {
-        title: "掌控话痨结果创意型", 
+        title: "自驱优化狂", 
         subtitle: "组长说的对，我还要更好", 
         tagline: "我可以做得更好！", 
         desc: "你是最卷的组员，不仅按组长说的做，还要更好。沟通频繁，追求完美，还常有新想法。组长压力很大。",
@@ -1170,7 +1247,7 @@
     },
     "CVRG": { 
       leader: {
-        title: "掌控话痨结果执行型", 
+        title: "进度执法官", 
         subtitle: "执行力拉满，掌控一切", 
         tagline: "做就完事！", 
         desc: "你是行动派组长：掌控全局、频繁沟通、只看结果、埋头执行。分配任务清晰，催得紧，但自己也带头干。",
@@ -1188,7 +1265,7 @@
     },
     "CVEI": { 
       leader: {
-        title: "掌控话痨情感创意型", 
+        title: "热心策划师", 
         subtitle: "情绪价值拉满", 
         tagline: "大家开心最重要！", 
         desc: "你是最有人情味的组长：掌控进度、频繁沟通、照顾情绪、创意不断。组员喜欢你，但有时太啰嗦。",
@@ -1206,7 +1283,7 @@
     },
     "CVEG": { 
       leader: {
-        title: "掌控话痨情感执行型", 
+        title: "操心总管", 
         subtitle: "踏实的老母亲", 
         tagline: "我来做，你们开心就好", 
         desc: "你是最操心的组长：掌控节奏、疯狂催促、照顾情绪、自己兜底。组员开心就好，累的是你。",
@@ -1224,7 +1301,7 @@
     },
     "CSRI": { 
       leader: {
-        title: "掌控沉默结果创意型", 
+        title: "冷面策划师", 
         subtitle: "低调的大佬", 
         tagline: "成果说话", 
         desc: "你是低调的强者：掌控进度、沉默但关注结果、时有创意。话不多但每句都点在点上。",
@@ -1242,7 +1319,7 @@
     },
     "CSRG": { 
       leader: {
-        title: "掌控沉默结果执行型", 
+        title: "沉默总控", 
         subtitle: "闷声干大事", 
         tagline: "干就对了！", 
         desc: "你是闷声干大事的组长：掌控进度、不多废话、只问结果、自己带头干。话最少，活最多。",
@@ -1260,7 +1337,7 @@
     },
     "CSEI": { 
       leader: {
-        title: "掌控沉默情感创意型", 
+        title: "温柔控场师", 
         subtitle: "温暖的大白", 
         tagline: "大家开心我就开心", 
         desc: "你是温暖的掌控者：掌控进度、不多说话、照顾情绪、经常创新想法。不强势但让大家很舒服。",
@@ -1278,7 +1355,7 @@
     },
     "CSEG": { 
       leader: {
-        title: "掌控沉默情感执行型", 
+        title: "静默大管家", 
         subtitle: "暖心大管家", 
         tagline: "我来做，大家开心", 
         desc: "你是暖心大管家：掌控一切但不多说，照顾大家情绪，自己默默做完所有事。组员爱你但也会心疼。",
@@ -1296,7 +1373,7 @@
     },
     "DVRI": { 
       leader: {
-        title: "放养话痨结果创意型", 
+        title: "灵感甩手王", 
         subtitle: "甩手掌柜+话痨+创新", 
         tagline: "我有个大胆的想法", 
         desc: "你是最自由的组长：不管进度、疯狂输出、只看结果、创意不断。组员自由但也有点慌，因为不知道你在想什么。",
@@ -1314,7 +1391,7 @@
     },
     "DVRG": { 
       leader: {
-        title: "放养话痨执行型", 
+        title: "气氛指挥官", 
         subtitle: "话痨但不管事", 
         tagline: "加油！奥利给！", 
         desc: "你是最佛的话痨组长：不管进度、光说不练、只看结果、自己不动。组员压力很大因为你只会加油。",
@@ -1332,7 +1409,7 @@
     },
     "DVEI": { 
       leader: {
-        title: "放养话痨情感创意型", 
+        title: "鸡汤策展人", 
         subtitle: "温暖的鸡汤大师", 
         tagline: "大家开心最重要！", 
         desc: "你是温暖的放养组长：不管进度、话很多、情绪价值拉满、常有奇思妙想。组员很喜欢你但成果emmm...",
@@ -1350,7 +1427,7 @@
     },
     "DVEG": { 
       leader: {
-        title: "放养话痨情感执行型", 
+        title: "只喊加油官", 
         subtitle: "只加油不动手", 
         tagline: "加油就完事！", 
         desc: "你是最佛系的组长：不管进度、话多、情绪价值拉满、但自己不动手。组员累成狗，你只会说加油。",
@@ -1368,7 +1445,7 @@
     },
     "DSRI": { 
       leader: {
-        title: "放养沉默结果创意型", 
+        title: "神秘验收官", 
         subtitle: "神龙见首不见尾", 
         tagline: "结果说话", 
         desc: "你是最神秘的组长：不管进度、沉默少言、只看结果、偶尔冒泡给惊喜。组员不知道你在干嘛，但成果出来时惊呆。",
@@ -1386,7 +1463,7 @@
     },
     "DSRG": { 
       leader: {
-        title: "放养沉默结果执行型", 
+        title: "消失负责人", 
         subtitle: "消失的组长", 
         tagline: "勿cue", 
         desc: "你是最神秘的组长：发完任务就消失，只看结果不管过程。组员慌死但找不到你。",
@@ -1404,7 +1481,7 @@
     },
     "DSEI": { 
       leader: {
-        title: "放养沉默情感创意型", 
+        title: "温柔隐身人", 
         subtitle: "温暖的神秘人", 
         tagline: "大家开心就好", 
         desc: "你是最温暖的神秘组长：不怎么说话但偶尔冒出温暖的话，常有创意想法但不说。",
@@ -1422,7 +1499,7 @@
     },
     "DSEG": { 
       leader: {
-        title: "放养沉默情感执行型", 
+        title: "佛系签字人", 
         subtitle: "不管事的老好人", 
         tagline: "我都可以", 
         desc: "你是最佛系的组长：什么都行、随便你们、我不打扰。组员觉得你像不存在，但又有点需要。",
@@ -1439,6 +1516,21 @@
       }
     }
   };
+
+  const strictTypeLabels = {
+    C: "掌控",
+    D: "放养",
+    V: "话痨",
+    S: "沉默",
+    R: "结果",
+    E: "情感",
+    I: "创意",
+    G: "执行"
+  };
+
+  function getStrictTypeName(type) {
+    return `${strictTypeLabels[type[0]]}${strictTypeLabels[type[1]]}${strictTypeLabels[type[2]]}${strictTypeLabels[type[3]]}型`;
+  }
 
   let allQuestions = [];
   let currentQuestion = 0;
@@ -1666,6 +1758,7 @@
     document.getElementById('resultSample').textContent = `样本编号：${type}-${new Date().getMonth() + 1}${String(new Date().getDate()).padStart(2, '0')} · 鉴定结论已生成`;
     document.getElementById('resultType').textContent = type;
     document.getElementById('resultTitle').textContent = roleResult.title;
+    document.getElementById('resultStrict').textContent = `严格定义：${getStrictTypeName(type)}`;
     document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
     document.getElementById('resultTagline').textContent = roleResult.tagline;
     document.getElementById('resultDesc').textContent = roleResult.desc;
@@ -1683,7 +1776,7 @@
     document.getElementById('dim4').textContent = dim4;
     
     const expectedRole = userRole === 'leader' ? '组员' : '组长';
-    document.getElementById('matchHint').textContent = `输入${expectedRole}的人格编号，预测你们的小组作业存活率。`;
+    document.getElementById('matchHint').textContent = `输入${expectedRole}的人格特质，预测你们的小组作业存活率。`;
     document.getElementById('matchInput').value = '';
     document.getElementById('matchError').textContent = '';
     document.getElementById('matchResult').classList.remove('show');
@@ -1873,12 +1966,13 @@ showPage('result');
 
   function closeModal() {
     document.getElementById('modal').classList.remove('active');
+    document.querySelector('.modal-content').classList.remove('wide');
   }
 
   function shareResult() {
     const type = document.getElementById('resultType').textContent;
     const title = document.getElementById('resultTitle').textContent;
-    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的编号：${SHARE_URL}`;
+    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的人格特质：${SHARE_URL}`;
     
     if (navigator.share) {
       navigator.share({ text });
@@ -1928,7 +2022,7 @@ showPage('result');
     });
   }
 
-  function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+  function getCanvasTextLines(ctx, text, maxWidth, maxLines) {
     let line = '';
     let lines = [];
 
@@ -1949,11 +2043,21 @@ showPage('result');
       lines[lines.length - 1] = lines[lines.length - 1].slice(0, -1) + '…';
     }
 
+    return lines;
+  }
+
+  function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+    const lines = getCanvasTextLines(ctx, text, maxWidth, maxLines);
+
     lines.forEach((lineText, index) => {
       ctx.fillText(lineText, x, y + index * lineHeight);
     });
 
     return y + lines.length * lineHeight;
+  }
+
+  function measureCanvasTextHeight(ctx, text, maxWidth, lineHeight, maxLines) {
+    return getCanvasTextLines(ctx, text, maxWidth, maxLines).length * lineHeight;
   }
 
   function fillRoundRect(ctx, x, y, width, height, radius) {
@@ -1975,6 +2079,7 @@ showPage('result');
     return new Promise(resolve => {
       const type = document.getElementById('resultType').textContent;
       const title = document.getElementById('resultTitle').textContent;
+      const strict = document.getElementById('resultStrict').textContent;
       const subtitle = document.getElementById('resultSubtitle').textContent;
       const tagline = document.getElementById('resultTagline').textContent;
       const desc = document.getElementById('resultDesc').textContent;
@@ -1989,14 +2094,14 @@ showPage('result');
 
       const canvas = document.createElement('canvas');
       canvas.width = 900;
-      canvas.height = 1200;
+      canvas.height = 1300;
       const ctx = canvas.getContext('2d');
-      const bg = ctx.createLinearGradient(0, 0, 900, 1200);
+      const bg = ctx.createLinearGradient(0, 0, 900, 1300);
       bg.addColorStop(0, '#151525');
       bg.addColorStop(0.58, '#0f0f1a');
       bg.addColorStop(1, '#261a2a');
       ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, 900, 1200);
+      ctx.fillRect(0, 0, 900, 1300);
 
       const glow = ctx.createRadialGradient(720, 130, 20, 720, 130, 360);
       glow.addColorStop(0, 'rgba(233, 69, 96, 0.36)');
@@ -2017,51 +2122,64 @@ showPage('result');
       ctx.fillText('小组作业事故鉴定报告', 244, 121);
 
       ctx.fillStyle = '#e94560';
-      ctx.font = '700 132px "Noto Sans SC", sans-serif';
-      ctx.fillText(type, 72, 190);
+      ctx.font = '700 126px "Noto Sans SC", sans-serif';
+      ctx.fillText(type, 72, 238);
 
+      let y = 342;
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 42px "Noto Sans SC", sans-serif';
-      wrapCanvasText(ctx, title, 72, 344, 756, 54, 2);
+      y = wrapCanvasText(ctx, title, 72, y, 756, 54, 2) + 18;
+      ctx.fillStyle = '#b8b8c8';
+      ctx.font = '400 22px "Noto Sans SC", sans-serif';
+      y = wrapCanvasText(ctx, strict, 72, y, 756, 32, 2) + 14;
       ctx.fillStyle = '#a0a0b0';
       ctx.font = '400 28px "Noto Sans SC", sans-serif';
-      wrapCanvasText(ctx, subtitle, 72, 456, 756, 40, 2);
+      y = wrapCanvasText(ctx, subtitle, 72, y, 756, 40, 2) + 34;
 
+      ctx.font = '700 30px "Noto Sans SC", sans-serif';
+      const taglineHeight = measureCanvasTextHeight(ctx, tagline, 692, 40, 2);
+      ctx.font = '400 24px "Noto Sans SC", sans-serif';
+      const descHeight = measureCanvasTextHeight(ctx, desc, 692, 34, 3);
+      const symptomHeight = Math.max(150, taglineHeight + descHeight + 78);
       ctx.fillStyle = 'rgba(255,255,255,0.06)';
-      fillRoundRect(ctx, 72, 545, 756, 150, 24);
+      fillRoundRect(ctx, 72, y, 756, symptomHeight, 24);
       ctx.fillStyle = '#e94560';
       ctx.font = '700 30px "Noto Sans SC", sans-serif';
-      wrapCanvasText(ctx, tagline, 104, 578, 692, 40, 1);
+      let symptomY = y + 42;
+      symptomY = wrapCanvasText(ctx, tagline, 104, symptomY, 692, 40, 2) + 18;
       ctx.fillStyle = '#ffffff';
       ctx.font = '400 24px "Noto Sans SC", sans-serif';
-      wrapCanvasText(ctx, desc, 104, 626, 692, 34, 2);
+      wrapCanvasText(ctx, desc, 104, symptomY, 692, 34, 3);
+      y += symptomHeight + 48;
 
       dimensions.forEach((item, index) => {
         const x = 72 + (index % 2) * 392;
-        const y = 742 + Math.floor(index / 2) * 112;
+        const itemY = y + Math.floor(index / 2) * 104;
         ctx.fillStyle = 'rgba(233,69,96,0.12)';
-        fillRoundRect(ctx, x, y, 364, 82, 18);
+        fillRoundRect(ctx, x, itemY, 364, 82, 18);
         ctx.fillStyle = '#a0a0b0';
         ctx.font = '400 20px "Noto Sans SC", sans-serif';
-        ctx.fillText(item[0], x + 24, y + 18);
+        ctx.fillText(item[0], x + 24, itemY + 18);
         ctx.fillStyle = '#ffffff';
         ctx.font = '700 26px "Noto Sans SC", sans-serif';
-        ctx.fillText(item[1], x + 24, y + 46);
+        ctx.fillText(item[1], x + 24, itemY + 46);
       });
+      y += 238;
 
       ctx.fillStyle = '#e94560';
       ctx.font = '700 24px "Noto Sans SC", sans-serif';
-      ctx.fillText('名场面', 72, 990);
+      ctx.fillText('名场面', 72, y);
+      y += 40;
       ctx.fillStyle = '#ffffff';
       ctx.font = '400 24px "Noto Sans SC", sans-serif';
-      wrapCanvasText(ctx, scene, 72, 1030, 756, 34, 3);
+      y = wrapCanvasText(ctx, scene, 72, y, 756, 34, 4);
 
       ctx.fillStyle = '#a0a0b0';
       ctx.font = '400 22px "Noto Sans SC", sans-serif';
-      ctx.fillText('进入小组作业人格鉴定中心', 72, 1130);
+      ctx.fillText('进入小组作业人格鉴定中心', 72, 1230);
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 22px "Noto Sans SC", sans-serif';
-      ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1162);
+      ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1262);
 
       canvas.toBlob(resolve, 'image/png');
     });
@@ -2096,7 +2214,7 @@ showPage('result');
     const type = document.getElementById('resultType').textContent;
     const title = document.getElementById('resultTitle').textContent;
     const file = new File([blob], `GroupTI-${type}.png`, { type: 'image/png' });
-    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的编号：${SHARE_URL}`;
+    const text = `我的GroupTI事故鉴定结果：${type}「${title}」。来测测你在小组作业事故里的人格特质：${SHARE_URL}`;
 
     if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({ files: [file], text });
@@ -2118,7 +2236,7 @@ showPage('result');
         <div class="gallery-item ${isCurrent ? 'current' : ''}" onclick="selectFromGallery('${t}')">
           <div class="gallery-code">${t}</div>
           <div class="gallery-name">${roleResult.title}</div>
-          <div class="gallery-subtitle">${roleResult.subtitle}</div>
+          <div class="gallery-subtitle">${getStrictTypeName(t)}</div>
         </div>
       `;
     });
@@ -2133,21 +2251,22 @@ showPage('result');
     const rows = getScoreRows();
     
     let html = `
-      <div style="text-align: left;">
+      <div class="score-detail">
         ${rows.map(row => `
-        <div style="margin-bottom:20px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-            <strong>${row.label} - ${row.left} / ${row.right}</strong>
-            <span>${row.leftPercent}% / ${row.rightPercent}%</span>
+        <div class="score-row">
+          <div class="score-meta">
+            <div class="score-title">${row.label} - ${row.left} / ${row.right}</div>
+            <div class="score-value">${row.leftPercent}% / ${row.rightPercent}%</div>
           </div>
-          <div style="background:var(--border);height:8px;border-radius:4px;">
-            <div style="width:${row.leftPercent}%;background:var(--accent);height:100%;border-radius:4px;"></div>
+          <div class="score-track">
+            <div class="score-fill" style="width:${row.leftPercent}%;"></div>
           </div>
         </div>
         `).join('')}
       </div>
     `;
     
+    document.querySelector('.modal-content').classList.add('wide');
     document.getElementById('modalTitle').textContent = '维度得分详情';
     document.getElementById('modalText').innerHTML = html;
     document.getElementById('modal').classList.add('active');
@@ -2161,6 +2280,7 @@ showPage('result');
     document.getElementById('resultBadge').textContent = userRole === 'leader' ? '组长人格' : '组员人格';
     document.getElementById('resultType').textContent = type;
     document.getElementById('resultTitle').textContent = roleResult.title;
+    document.getElementById('resultStrict').textContent = `严格定义：${getStrictTypeName(type)}`;
     document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
     document.getElementById('resultTagline').textContent = roleResult.tagline;
     document.getElementById('resultDesc').textContent = roleResult.desc;
