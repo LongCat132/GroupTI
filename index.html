@@ -2155,19 +2155,47 @@ showPage('result');
     ctx.restore();
   }
 
-  function loadPersonaImage(type) {
+  function loadPersonaImage(type, timeoutMs = 1600) {
     return new Promise(resolve => {
       const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = () => resolve(null);
+      let settled = false;
+      const finish = value => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(value);
+      };
+      const timer = setTimeout(() => finish(null), timeoutMs);
+      img.onload = () => finish(img);
+      img.onerror = () => finish(null);
       img.src = getPersonaImagePath(type);
     });
   }
 
-  async function createResultCardBlob() {
-    const type = document.getElementById('resultType').textContent;
-    const personaImage = await loadPersonaImage(type);
+  function canvasToBlobSafe(canvas, type = 'image/png') {
     return new Promise(resolve => {
+      let settled = false;
+      const finish = blob => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        resolve(blob || null);
+      };
+      const timer = setTimeout(() => finish(null), 2500);
+
+      try {
+        canvas.toBlob(finish, type);
+      } catch (error) {
+        console.warn('结果卡片导出失败，准备降级生成。', error);
+        finish(null);
+      }
+    });
+  }
+
+  async function createResultCardBlob(includePersona = true) {
+    const type = document.getElementById('resultType').textContent;
+    const personaImage = includePersona ? await loadPersonaImage(type) : null;
+    const blob = await new Promise(resolve => {
       const title = document.getElementById('resultTitle').textContent;
       const strict = document.getElementById('resultStrict').textContent;
       const subtitle = document.getElementById('resultSubtitle').textContent;
@@ -2284,8 +2312,14 @@ showPage('result');
       ctx.font = '700 22px "Noto Sans SC", sans-serif';
       ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1462);
 
-      canvas.toBlob(resolve, 'image/png');
+      canvasToBlobSafe(canvas).then(resolve);
     });
+
+    if (!blob && personaImage) {
+      return createResultCardBlob(false);
+    }
+
+    return blob;
   }
 
   async function showResultCard() {
@@ -2293,7 +2327,13 @@ showPage('result');
     document.getElementById('modalText').innerHTML = '<p>正在生成图片...</p>';
     document.getElementById('modal').classList.add('active');
 
-    const blob = await createResultCardBlob();
+    let blob = null;
+    try {
+      blob = await createResultCardBlob();
+    } catch (error) {
+      console.error('生成结果卡片失败', error);
+    }
+
     if (!blob) {
       document.getElementById('modalText').textContent = '图片生成失败，请稍后再试。';
       return;
@@ -2313,7 +2353,18 @@ showPage('result');
   }
 
   async function shareResultCardImage() {
-    const blob = await createResultCardBlob();
+    let blob = null;
+    try {
+      blob = await createResultCardBlob();
+    } catch (error) {
+      console.error('生成分享图片失败', error);
+    }
+
+    if (!blob) {
+      alert('图片生成失败，请稍后再试。');
+      return;
+    }
+
     const type = document.getElementById('resultType').textContent;
     const title = document.getElementById('resultTitle').textContent;
     const file = new File([blob], `GroupTI-${type}.png`, { type: 'image/png' });
