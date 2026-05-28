@@ -422,7 +422,36 @@
 
     .result-subtitle {
       color: var(--text-muted);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
+    }
+
+    .persona-visual {
+      width: min(100%, 360px);
+      aspect-ratio: 1;
+      margin: 0 auto 24px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(135deg, rgba(255, 63, 95, 0.13), rgba(246, 200, 95, 0.06));
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+      position: relative;
+    }
+
+    .persona-visual::after {
+      content: "";
+      position: absolute;
+      inset: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .persona-visual img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
     }
 
     .dimensions {
@@ -783,7 +812,7 @@
 
     .gallery-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 10px;
       margin-top: 16px;
     }
@@ -797,6 +826,16 @@
       cursor: pointer;
       transition: all 0.3s ease;
       font-size: 12px;
+    }
+
+    .gallery-image {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      background: var(--card-bg);
     }
 
     .gallery-code {
@@ -860,7 +899,7 @@
       .title { font-size: 36px; }
       .case-strip { grid-template-columns: 1fr; }
       .dimension-items { grid-template-columns: 1fr; }
-      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
       .match-input-wrapper { flex-direction: column; }
       .modal-content,
       .modal-content.wide {
@@ -954,6 +993,9 @@
           <span class="result-strict" id="resultStrict"></span>
         </div>
         <p class="result-subtitle" id="resultSubtitle"></p>
+        <div class="persona-visual" aria-hidden="true">
+          <img id="resultPersonaImage" src="" alt="">
+        </div>
         
         <div class="dimensions">
           <p class="dimension-hint">点击卡片查看详细解释</p>
@@ -1532,6 +1574,25 @@
     return `${strictTypeLabels[type[0]]}${strictTypeLabels[type[1]]}${strictTypeLabels[type[2]]}${strictTypeLabels[type[3]]}型`;
   }
 
+  function getPersonaImagePath(type, role = userRole) {
+    return `assets/personas/${role}/${type}.png`;
+  }
+
+  function setPersonaImage(type) {
+    const img = document.getElementById('resultPersonaImage');
+    const frame = img.closest('.persona-visual');
+    const roleLabel = userRole === 'leader' ? '组长' : '组员';
+    frame.style.display = '';
+    img.onload = () => {
+      frame.style.display = '';
+    };
+    img.onerror = () => {
+      frame.style.display = 'none';
+    };
+    img.src = getPersonaImagePath(type);
+    img.alt = `${roleLabel}人格 ${type} ${personalityTypes[type][userRole].title}`;
+  }
+
   let allQuestions = [];
   let currentQuestion = 0;
   let answers = [];
@@ -1760,6 +1821,7 @@
     document.getElementById('resultTitle').textContent = roleResult.title;
     document.getElementById('resultStrict').textContent = `严格定义：${getStrictTypeName(type)}`;
     document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
+    setPersonaImage(type);
     document.getElementById('resultTagline').textContent = roleResult.tagline;
     document.getElementById('resultDesc').textContent = roleResult.desc;
     document.getElementById('resultScene').textContent = roleResult.scene;
@@ -2060,7 +2122,7 @@ showPage('result');
     return getCanvasTextLines(ctx, text, maxWidth, maxLines).length * lineHeight;
   }
 
-  function fillRoundRect(ctx, x, y, width, height, radius) {
+  function pathRoundRect(ctx, x, y, width, height, radius) {
     ctx.beginPath();
     ctx.moveTo(x + radius, y);
     ctx.lineTo(x + width - radius, y);
@@ -2072,12 +2134,40 @@ showPage('result');
     ctx.lineTo(x, y + radius);
     ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
+  }
+
+  function fillRoundRect(ctx, x, y, width, height, radius) {
+    pathRoundRect(ctx, x, y, width, height, radius);
     ctx.fill();
   }
 
-  function createResultCardBlob() {
+  function drawRoundImage(ctx, img, x, y, width, height, radius) {
+    const scale = Math.max(width / img.naturalWidth, height / img.naturalHeight);
+    const sourceWidth = width / scale;
+    const sourceHeight = height / scale;
+    const sourceX = (img.naturalWidth - sourceWidth) / 2;
+    const sourceY = (img.naturalHeight - sourceHeight) / 2;
+
+    ctx.save();
+    pathRoundRect(ctx, x, y, width, height, radius);
+    ctx.clip();
+    ctx.drawImage(img, sourceX, sourceY, sourceWidth, sourceHeight, x, y, width, height);
+    ctx.restore();
+  }
+
+  function loadPersonaImage(type) {
     return new Promise(resolve => {
-      const type = document.getElementById('resultType').textContent;
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = getPersonaImagePath(type);
+    });
+  }
+
+  async function createResultCardBlob() {
+    const type = document.getElementById('resultType').textContent;
+    const personaImage = await loadPersonaImage(type);
+    return new Promise(resolve => {
       const title = document.getElementById('resultTitle').textContent;
       const strict = document.getElementById('resultStrict').textContent;
       const subtitle = document.getElementById('resultSubtitle').textContent;
@@ -2094,14 +2184,14 @@ showPage('result');
 
       const canvas = document.createElement('canvas');
       canvas.width = 900;
-      canvas.height = 1300;
+      canvas.height = 1500;
       const ctx = canvas.getContext('2d');
-      const bg = ctx.createLinearGradient(0, 0, 900, 1300);
+      const bg = ctx.createLinearGradient(0, 0, 900, 1500);
       bg.addColorStop(0, '#151525');
       bg.addColorStop(0.58, '#0f0f1a');
       bg.addColorStop(1, '#261a2a');
       ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, 900, 1300);
+      ctx.fillRect(0, 0, 900, 1500);
 
       const glow = ctx.createRadialGradient(720, 130, 20, 720, 130, 360);
       glow.addColorStop(0, 'rgba(233, 69, 96, 0.36)');
@@ -2125,7 +2215,20 @@ showPage('result');
       ctx.font = '700 126px "Noto Sans SC", sans-serif';
       ctx.fillText(type, 72, 238);
 
-      let y = 342;
+      if (personaImage) {
+        const imageX = 552;
+        const imageY = 154;
+        const imageSize = 276;
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        fillRoundRect(ctx, imageX - 12, imageY - 12, imageSize + 24, imageSize + 24, 30);
+        drawRoundImage(ctx, personaImage, imageX, imageY, imageSize, imageSize, 22);
+        ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+        ctx.lineWidth = 2;
+        pathRoundRect(ctx, imageX, imageY, imageSize, imageSize, 22);
+        ctx.stroke();
+      }
+
+      let y = personaImage ? 484 : 342;
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 42px "Noto Sans SC", sans-serif';
       y = wrapCanvasText(ctx, title, 72, y, 756, 54, 2) + 18;
@@ -2176,10 +2279,10 @@ showPage('result');
 
       ctx.fillStyle = '#a0a0b0';
       ctx.font = '400 22px "Noto Sans SC", sans-serif';
-      ctx.fillText('进入小组作业人格鉴定中心', 72, 1230);
+      ctx.fillText('进入小组作业人格鉴定中心', 72, 1430);
       ctx.fillStyle = '#ffffff';
       ctx.font = '700 22px "Noto Sans SC", sans-serif';
-      ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1262);
+      ctx.fillText(SHARE_URL.replace(/^https?:\/\//, ''), 72, 1462);
 
       canvas.toBlob(resolve, 'image/png');
     });
@@ -2234,6 +2337,7 @@ showPage('result');
       const roleResult = personalityTypes[t][userRole];
       html += `
         <div class="gallery-item ${isCurrent ? 'current' : ''}" onclick="selectFromGallery('${t}')">
+          <img class="gallery-image" src="${getPersonaImagePath(t)}" alt="${roleResult.title}">
           <div class="gallery-code">${t}</div>
           <div class="gallery-name">${roleResult.title}</div>
           <div class="gallery-subtitle">${getStrictTypeName(t)}</div>
@@ -2244,6 +2348,7 @@ showPage('result');
     
     document.getElementById('modalTitle').textContent = '人格图鉴';
     document.getElementById('modalText').innerHTML = html;
+    document.querySelector('.modal-content').classList.add('wide');
     document.getElementById('modal').classList.add('active');
   }
 
@@ -2282,6 +2387,7 @@ showPage('result');
     document.getElementById('resultTitle').textContent = roleResult.title;
     document.getElementById('resultStrict').textContent = `严格定义：${getStrictTypeName(type)}`;
     document.getElementById('resultSubtitle').textContent = roleResult.subtitle;
+    setPersonaImage(type);
     document.getElementById('resultTagline').textContent = roleResult.tagline;
     document.getElementById('resultDesc').textContent = roleResult.desc;
     document.getElementById('resultScene').textContent = roleResult.scene;
