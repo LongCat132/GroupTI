@@ -100,7 +100,7 @@ assets/personas/leader/
 assets/personas/member/
 ```
 
-每套各 16 张，按人格特质代码命名，例如 `CVRI.png`、`DVEG.png`。结果页、人格图鉴和分享图会根据用户角色自动使用对应目录下的图片。
+每套各 16 张，按人格特质代码命名，例如 `CVRI.jpg`、`DVEG.jpg`。结果页、人格图鉴和分享图会根据用户角色自动使用对应目录下的图片。
 
 ## 数据收集
 
